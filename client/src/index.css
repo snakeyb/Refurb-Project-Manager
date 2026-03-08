@@ -6,94 +6,59 @@
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
-
-  /* Automatic computation of border around primary / danger buttons */
-  --opaque-button-border-intensity: -8; /* In terms of percentages */
-
-  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --opaque-button-border-intensity: -8;
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
-
-  --background: red; /*replace with H S L */
-
-  --foreground: red; /*replace with H S L */
-
-  --border: red; /*replace with H S L */
-
-  --card: red; /*replace with H S L */
-
-  --card-foreground: red; /*replace with H S L */
-
-  --card-border: red; /*replace with H S L */
-
-  --sidebar: red; /*replace with H S L */
-
-  --sidebar-foreground: red; /*replace with H S L */
-
-  --sidebar-border: red; /*replace with H S L */
-
-  --sidebar-primary: red; /*replace with H S L */
-
-  --sidebar-primary-foreground: red; /*replace with H S L */
-
-  --sidebar-accent: red; /*replace with H S L */
-
-  --sidebar-accent-foreground: red; /*replace with H S L */
-
-  --sidebar-ring: red; /*replace with H S L */
-
-  --popover: red; /*replace with H S L */
-
-  --popover-foreground: red; /*replace with H S L */
-
-  --popover-border: red; /*replace with H S L */
-
-  --primary: red; /*replace with H S L */
-
-  --primary-foreground: red; /*replace with H S L */
-
-  --secondary: red; /*replace with H S L */
-
-  --secondary-foreground: red; /*replace with H S L */
-
-  --muted: red; /*replace with H S L */
-
-  --muted-foreground: red; /*replace with H S L */
-
-  --accent: red; /*replace with H S L */
-
-  --accent-foreground: red; /*replace with H S L */
-
-  --destructive: red; /*replace with H S L */
-
-  --destructive-foreground: red; /*replace with H S L */
-
-  --input: red; /*replace with H S L */
-  --ring: red; /*replace with H S L */
-  --chart-1: red; /*replace with H S L */
-  --chart-2: red; /*replace with H S L */
-  --chart-3: red; /*replace with H S L */
-  --chart-4: red; /*replace with H S L */
-  --chart-5: red; /*replace with H S L */
-
-  --font-sans: 'Inter', sans-serif;
+  --background: 210 20% 98%;
+  --foreground: 215 25% 15%;
+  --border: 210 15% 88%;
+  --card: 210 18% 96%;
+  --card-foreground: 215 25% 15%;
+  --card-border: 210 15% 90%;
+  --sidebar: 210 18% 94%;
+  --sidebar-foreground: 215 25% 15%;
+  --sidebar-border: 210 15% 86%;
+  --sidebar-primary: 215 85% 45%;
+  --sidebar-primary-foreground: 210 20% 98%;
+  --sidebar-accent: 210 18% 88%;
+  --sidebar-accent-foreground: 215 25% 15%;
+  --sidebar-ring: 215 85% 45%;
+  --popover: 210 18% 92%;
+  --popover-foreground: 215 25% 15%;
+  --popover-border: 210 15% 84%;
+  --primary: 215 85% 45%;
+  --primary-foreground: 210 20% 98%;
+  --secondary: 210 18% 89%;
+  --secondary-foreground: 215 25% 15%;
+  --muted: 210 15% 90%;
+  --muted-foreground: 215 20% 35%;
+  --accent: 210 18% 91%;
+  --accent-foreground: 215 25% 15%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --input: 210 20% 75%;
+  --ring: 215 85% 45%;
+  --chart-1: 215 85% 45%;
+  --chart-2: 205 75% 42%;
+  --chart-3: 195 70% 38%;
+  --chart-4: 185 65% 35%;
+  --chart-5: 175 60% 32%;
+  --font-sans: Open Sans, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: .5rem; /* 8px */
-  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00); /*replace with H S L */
-  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00); /*replace with H S L */
-  --shadow-sm: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --radius: .5rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(210 15% 50% / 0.03);
+  --shadow-xs: 0px 2px 0px 0px hsl(210 15% 50% / 0.05);
+  --shadow-sm: 0px 2px 0px 0px hsl(210 15% 50% / 0.05), 0px 1px 2px -1px hsl(210 15% 50% / 0.08);
+  --shadow: 0px 2px 0px 0px hsl(210 15% 50% / 0.05), 0px 1px 2px -1px hsl(210 15% 50% / 0.10);
+  --shadow-md: 0px 2px 0px 0px hsl(210 15% 50% / 0.05), 0px 2px 4px -1px hsl(210 15% 50% / 0.12);
+  --shadow-lg: 0px 2px 0px 0px hsl(210 15% 50% / 0.05), 0px 4px 6px -1px hsl(210 15% 50% / 0.15);
+  --shadow-xl: 0px 2px 0px 0px hsl(210 15% 50% / 0.05), 0px 8px 10px -1px hsl(210 15% 50% / 0.18);
+  --shadow-2xl: 0px 2px 0px 0px hsl(210 15% 50% / 0.08);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  /* Automatically computed borders - intensity can be controlled by the user by the --opaque-button-border-intensity setting */
-
-  /* Fallback for older browsers */
+/* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
@@ -125,85 +90,79 @@
 .dark {
   --button-outline: rgba(255,255,255, .10);
   --badge-outline: rgba(255,255,255, .05);
-
-  --opaque-button-border-intensity: 9;  /* In terms of percentages */
-
-  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
+  --background: 215 25% 8%;
+  --foreground: 210 20% 94%;
+  --border: 215 20% 18%;
+  --card: 215 24% 10%;
+  --card-foreground: 210 20% 94%;
+  --card-border: 215 20% 14%;
+  --sidebar: 215 24% 12%;
+  --sidebar-foreground: 210 20% 94%;
+  --sidebar-border: 215 20% 16%;
+  --sidebar-primary: 215 85% 55%;
+  --sidebar-primary-foreground: 210 20% 98%;
+  --sidebar-accent: 215 22% 18%;
+  --sidebar-accent-foreground: 210 20% 94%;
+  --sidebar-ring: 215 85% 55%;
+  --popover: 215 24% 14%;
+  --popover-foreground: 210 20% 94%;
+  --popover-border: 215 20% 20%;
+  --primary: 215 85% 55%;
+  --primary-foreground: 210 20% 98%;
+  --secondary: 215 22% 20%;
+  --secondary-foreground: 210 20% 94%;
+  --muted: 215 20% 18%;
+  --muted-foreground: 210 15% 65%;
+  --accent: 215 22% 16%;
+  --accent-foreground: 210 20% 94%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --input: 215 25% 28%;
+  --ring: 215 85% 55%;
+  --chart-1: 215 85% 65%;
+  --chart-2: 205 75% 62%;
+  --chart-3: 195 70% 58%;
+  --chart-4: 185 65% 55%;
+  --chart-5: 175 60% 52%;
+  --shadow-2xs: 0px 2px 0px 0px hsl(215 25% 5% / 0.08);
+  --shadow-xs: 0px 2px 0px 0px hsl(215 25% 5% / 0.12);
+  --shadow-sm: 0px 2px 0px 0px hsl(215 25% 5% / 0.12), 0px 1px 2px -1px hsl(215 25% 5% / 0.15);
+  --shadow: 0px 2px 0px 0px hsl(215 25% 5% / 0.12), 0px 1px 2px -1px hsl(215 25% 5% / 0.18);
+  --shadow-md: 0px 2px 0px 0px hsl(215 25% 5% / 0.12), 0px 2px 4px -1px hsl(215 25% 5% / 0.22);
+  --shadow-lg: 0px 2px 0px 0px hsl(215 25% 5% / 0.12), 0px 4px 6px -1px hsl(215 25% 5% / 0.28);
+  --shadow-xl: 0px 2px 0px 0px hsl(215 25% 5% / 0.12), 0px 8px 10px -1px hsl(215 25% 5% / 0.35);
+  --shadow-2xl: 0px 2px 0px 0px hsl(215 25% 5% / 0.18);
 
-  --background: red; /*replace with H S L */
+/* Fallback for older browsers */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
-  --foreground: red; /*replace with H S L */
+  /* Fallback for older browsers */
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
-  --border: red; /*replace with H S L */
+  /* Fallback for older browsers */
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
-  --card: red; /*replace with H S L */
+  /* Fallback for older browsers */
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
-  --card-foreground: red; /*replace with H S L */
+  /* Fallback for older browsers */
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
-  --card-border: red; /*replace with H S L */
+  /* Fallback for older browsers */
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 
-  --sidebar: red; /*replace with H S L */
-
-  --sidebar-foreground: red; /*replace with H S L */
-
-  --sidebar-border: red; /*replace with H S L */
-
-  --sidebar-primary: red; /*replace with H S L */
-
-  --sidebar-primary-foreground: red; /*replace with H S L */
-
-  --sidebar-accent: red; /*replace with H S L */
-
-  --sidebar-accent-foreground: red; /*replace with H S L */
-
-  --sidebar-ring: red; /*replace with H S L */
-
-  --popover: red; /*replace with H S L */
-
-  --popover-foreground: red; /*replace with H S L */
-
-  --popover-border: red; /*replace with H S L */
-
-  --primary: red; /*replace with H S L */
-
-  --primary-foreground: red; /*replace with H S L */
-
-  --secondary: red; /*replace with H S L */
-
-  --secondary-foreground: red; /*replace with H S L */
-
-  --muted: red; /*replace with H S L */
-
-  --muted-foreground: red; /*replace with H S L */
-
-  --accent: red; /*replace with H S L */
-
-  --accent-foreground: red; /*replace with H S L */
-
-  --destructive: red; /*replace with H S L */
-
-  --destructive-foreground: red; /*replace with H S L */
-
-  /* Used as the border around inputs. Dark mode: Should be a border that is light enough to have high contrast when rendered on a --card background. More contrast than standard --border */
-  --input: red; /*replace with H S L */
-  --ring: red; /*replace with H S L */
-  --chart-1: red; /*replace with H S L */
-  --chart-2: red; /*replace with H S L */
-  --chart-3: red; /*replace with H S L */
-  --chart-4: red; /*replace with H S L */
-  --chart-5: red; /*replace with H S L */
-
-  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
-
+  /* Fallback for older browsers */
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
 @layer base {
