@@ -1,0 +1,108 @@
+---
+- name: Deploy RefurbProject integration to EspoCRM
+  hosts: espocrm_prod
+  become: true
+
+  vars:
+    github_repo: "https://github.com/YOUR_ORG/YOUR_REPO.git"
+    github_branch: "main"
+    refurb_app_url: "https://your-refurb-app.replit.app"
+    espocrm_root: "/var/www/espocrm"
+    espocrm_user: "www-data"
+    espocrm_group: "www-data"
+    tmp_clone_dir: "/tmp/refurb-deploy-{{ ansible_date_time.epoch }}"
+
+  tasks:
+    - name: Install git if not present
+      ansible.builtin.package:
+        name: git
+        state: present
+
+    - name: Clone repository to temp directory
+      ansible.builtin.git:
+        repo: "{{ github_repo }}"
+        dest: "{{ tmp_clone_dir }}"
+        version: "{{ github_branch }}"
+        depth: 1
+
+    - name: Create EspoCRM custom metadata directories
+      ansible.builtin.file:
+        path: "{{ espocrm_root }}/{{ item }}"
+        state: directory
+        owner: "{{ espocrm_user }}"
+        group: "{{ espocrm_group }}"
+        mode: "0755"
+      loop:
+        - custom/Espo/Custom/Resources/metadata/entityDefs
+        - custom/Espo/Custom/Resources/metadata/scopes
+        - custom/Espo/Custom/Resources/metadata/clientDefs
+        - custom/Espo/Custom/Resources/layouts/RefurbProject
+        - custom/Espo/Custom/Resources/i18n/en_US
+        - client/custom/src/views/opportunity
+        - client/custom/src/views/lead
+
+    - name: Copy RefurbProject entity definition files
+      ansible.builtin.copy:
+        src: "{{ tmp_clone_dir }}/espocrm-integration/custom/Espo/Custom/Resources/{{ item }}"
+        dest: "{{ espocrm_root }}/custom/Espo/Custom/Resources/{{ item }}"
+        owner: "{{ espocrm_user }}"
+        group: "{{ espocrm_group }}"
+        mode: "0644"
+        remote_src: true
+      loop:
+        - metadata/entityDefs/RefurbProject.json
+        - metadata/scopes/RefurbProject.json
+        - metadata/clientDefs/RefurbProject.json
+        - metadata/clientDefs/Opportunity.json
+        - metadata/clientDefs/Lead.json
+        - layouts/RefurbProject/list.json
+        - layouts/RefurbProject/detail.json
+        - i18n/en_US/RefurbProject.json
+        - i18n/en_US/Global.json
+
+    - name: Copy Opportunity button handler and set app URL
+      ansible.builtin.copy:
+        src: "{{ tmp_clone_dir }}/espocrm-integration/client/custom/src/views/opportunity/refurb-button.js"
+        dest: "{{ espocrm_root }}/client/custom/src/views/opportunity/refurb-button.js"
+        owner: "{{ espocrm_user }}"
+        group: "{{ espocrm_group }}"
+        mode: "0644"
+        remote_src: true
+
+    - name: Copy Lead button handler and set app URL
+      ansible.builtin.copy:
+        src: "{{ tmp_clone_dir }}/espocrm-integration/client/custom/src/views/lead/refurb-button.js"
+        dest: "{{ espocrm_root }}/client/custom/src/views/lead/refurb-button.js"
+        owner: "{{ espocrm_user }}"
+        group: "{{ espocrm_group }}"
+        mode: "0644"
+        remote_src: true
+
+    - name: Replace placeholder URL in Opportunity button handler
+      ansible.builtin.replace:
+        path: "{{ espocrm_root }}/client/custom/src/views/opportunity/refurb-button.js"
+        regexp: "\\{\\{REFURB_APP_URL\\}\\}"
+        replace: "{{ refurb_app_url }}"
+
+    - name: Replace placeholder URL in Lead button handler
+      ansible.builtin.replace:
+        path: "{{ espocrm_root }}/client/custom/src/views/lead/refurb-button.js"
+        regexp: "\\{\\{REFURB_APP_URL\\}\\}"
+        replace: "{{ refurb_app_url }}"
+
+    - name: Clear EspoCRM cache
+      ansible.builtin.command:
+        cmd: php clear_cache.php
+        chdir: "{{ espocrm_root }}"
+      changed_when: true
+
+    - name: Rebuild EspoCRM
+      ansible.builtin.command:
+        cmd: php rebuild.php
+        chdir: "{{ espocrm_root }}"
+      changed_when: true
+
+    - name: Clean up temp clone directory
+      ansible.builtin.file:
+        path: "{{ tmp_clone_dir }}"
+        state: absent
