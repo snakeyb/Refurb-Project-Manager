@@ -7,9 +7,9 @@
                     "label": "Refurb Projects",
                     "name": "refurbProjects",
                     "style": "default",
-                    "acl": "edit",
                     "handler": "custom:refurb-handler",
-                    "actionFunction": "openRefurbProjects"
+                    "actionFunction": "openRefurbProjects",
+                    "checkVisibilityFunction": "isVisible"
                 }
             ]
         }

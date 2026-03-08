@@ -67,9 +67,8 @@ This installs:
 - `custom/Espo/Custom/Resources/i18n/en_US/Global.json` - Scope name translations
 
 **Button Configuration:**
-- `custom/Espo/Custom/Resources/metadata/clientDefs/Opportunity.json` - Button metadata for Opportunity
-- `custom/Espo/Custom/Resources/metadata/clientDefs/Lead.json` - Button metadata for Lead
-- `client/custom/src/refurb-handler.js` - Button action handler (shared by both entities)
+- `custom/Espo/Custom/Resources/metadata/clientDefs/Global.json` - Button metadata (added globally, visible only on Opportunity and Lead)
+- `client/custom/src/refurb-handler.js` - Button action handler with visibility check
 
 ### Step 3: Clear Cache & Rebuild
 
@@ -112,12 +111,8 @@ Since the Refurb Projects app is centrally hosted on a different domain, you may
 
 To add the button to other entity types (e.g., Contact, Account):
 
-1. Create a new metadata JSON file:
-   `custom/Espo/Custom/Resources/metadata/clientDefs/{EntityType}.json`
-
-2. Use the same format as Opportunity.json/Lead.json — the shared `refurb-handler.js` works for any entity type automatically
-
-3. Clear cache and rebuild
+1. Edit `client/custom/src/refurb-handler.js` and add the entity type to the `isVisible()` method's array
+2. Clear cache and rebuild
 
 ## URL Parameters
 
@@ -132,13 +127,11 @@ The app accepts these URL parameters:
 
 Auth credentials are passed via the URL hash fragment (not logged or sent to servers) and cleared from the URL immediately after the app reads them.
 
-## Merging with Existing clientDefs
-
-If your Opportunity or Lead entity already has a custom `clientDefs` JSON file, you'll need to merge the button configuration manually rather than replacing the file. Add the `refurbProjects` entry into the existing `menu.detail.buttons` object.
-
 ## Merging with Existing Global.json
 
-If you already have a custom `i18n/en_US/Global.json`, merge the `scopeNames` and `scopeNamesPlural` entries rather than replacing the file.
+If you already have custom `i18n/en_US/Global.json` or `clientDefs/Global.json` files, merge the entries rather than replacing the files:
+- For `i18n/en_US/Global.json`: merge the `scopeNames` and `scopeNamesPlural` entries
+- For `clientDefs/Global.json`: merge the `menu.detail.buttons` array entries
 
 ## RefurbProject Entity Fields
 

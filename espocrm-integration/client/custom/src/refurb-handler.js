@@ -4,6 +4,12 @@ define(['action-handler'], function (Dep) {
 
     return class extends Dep {
 
+        isVisible() {
+            var entityType = this.view.model.entityType || this.view.model.name;
+
+            return ['Lead', 'Opportunity'].includes(entityType);
+        }
+
         openRefurbProjects() {
             var model = this.view.model;
             var entityType = model.entityType || model.name;
