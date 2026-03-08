@@ -49,7 +49,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
   if (readOnly) {
     return (
       <div data-testid="line-items-readonly">
-        <div className="border rounded-md">
+        <div className="hidden md:block border rounded-md">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-white dark:bg-card">
@@ -86,6 +86,42 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
             </tbody>
           </table>
         </div>
+
+        <div className="md:hidden space-y-3">
+          {items.map((item, index) => (
+            <div key={item.id} className="border rounded-md bg-white dark:bg-card p-3" data-testid={`card-line-item-${index}`}>
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-xs text-muted-foreground font-medium">#{index + 1}</span>
+                <span className="text-sm font-semibold tabular-nums">{formatCurrency(item.lineTotalIncVat, currency)}</span>
+              </div>
+              <p className="text-sm font-medium mb-2">{item.description || "—"}</p>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <div className="flex justify-between">
+                  <span>Qty:</span>
+                  <span className="tabular-nums">{item.quantity}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Unit Cost:</span>
+                  <span className="tabular-nums">{formatCurrency(item.unitCost, currency)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Net:</span>
+                  <span className="tabular-nums">{formatCurrency(item.lineTotal, currency)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>VAT ({item.vatRate}%):</span>
+                  <span className="tabular-nums">{formatCurrency(item.vatAmount, currency)}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {items.length === 0 && (
+            <div className="border rounded-md p-6 text-center text-muted-foreground text-sm">
+              No line items
+            </div>
+          )}
+        </div>
+
         <TotalsSummary subtotal={totals.subtotal} vatTotal={totals.vatTotal} grandTotal={totals.grandTotal} currency={currency} />
       </div>
     );
@@ -93,7 +129,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
 
   return (
     <div data-testid="line-items-editable">
-      <div className="border rounded-md">
+      <div className="hidden md:block border rounded-md">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-white dark:bg-card">
@@ -186,7 +222,87 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
         </table>
       </div>
 
-      <div className="mt-3 flex items-start justify-between gap-4">
+      <div className="md:hidden space-y-3">
+        {items.map((item, index) => (
+          <div key={item.id} className="border rounded-md bg-white dark:bg-card p-3" data-testid={`card-line-item-edit-${index}`}>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs text-muted-foreground font-medium">Item #{index + 1}</span>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => removeItem(index)}
+                className="h-7 w-7 text-muted-foreground"
+                data-testid={`button-remove-item-mobile-${index}`}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <label className="text-xs text-muted-foreground">Description</label>
+                <Input
+                  value={item.description}
+                  onChange={(e) => updateItem(index, "description", e.target.value)}
+                  placeholder="Enter description..."
+                  className="mt-0.5 h-9"
+                  data-testid={`input-description-mobile-${index}`}
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="text-xs text-muted-foreground">Qty</label>
+                  <Input
+                    type="number"
+                    value={item.quantity || ""}
+                    onChange={(e) => updateItem(index, "quantity", parseFloat(e.target.value) || 0)}
+                    className="mt-0.5 h-9 tabular-nums"
+                    min="0"
+                    step="1"
+                    data-testid={`input-quantity-mobile-${index}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Unit Cost</label>
+                  <Input
+                    type="number"
+                    value={item.unitCost || ""}
+                    onChange={(e) => updateItem(index, "unitCost", parseFloat(e.target.value) || 0)}
+                    className="mt-0.5 h-9 tabular-nums"
+                    min="0"
+                    step="0.01"
+                    data-testid={`input-unit-cost-mobile-${index}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">VAT Rate</label>
+                  <Select
+                    value={String(item.vatRate)}
+                    onValueChange={(v) => updateItem(index, "vatRate", parseFloat(v))}
+                  >
+                    <SelectTrigger className="mt-0.5 h-9 text-sm" data-testid={`select-vat-rate-mobile-${index}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {VAT_RATES.map((rate) => (
+                        <SelectItem key={rate.value} value={rate.value}>{rate.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex justify-between items-center pt-1 border-t text-xs">
+                <div className="flex gap-3 text-muted-foreground">
+                  <span>Net: <span className="tabular-nums">{formatCurrency(item.lineTotal, currency)}</span></span>
+                  <span>VAT: <span className="tabular-nums">{formatCurrency(item.vatAmount, currency)}</span></span>
+                </div>
+                <span className="font-semibold tabular-nums text-sm">{formatCurrency(item.lineTotalIncVat, currency)}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-start justify-between gap-4">
         <Button variant="outline" size="sm" onClick={addItem} data-testid="button-add-line-item">
           <Plus className="h-3.5 w-3.5 mr-1.5" />
           Add Line Item
@@ -199,7 +315,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
 
 function TotalsSummary({ subtotal, vatTotal, grandTotal, currency }: { subtotal: number; vatTotal: number; grandTotal: number; currency: string }) {
   return (
-    <div className="w-64 ml-auto mt-3" data-testid="totals-summary">
+    <div className="w-full sm:w-64 sm:ml-auto mt-3" data-testid="totals-summary">
       <div className="border rounded-md bg-white dark:bg-card p-3 space-y-1.5">
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Subtotal (Net)</span>

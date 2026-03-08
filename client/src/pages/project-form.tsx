@@ -13,7 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { RefurbProject, RefurbLineItem } from "@shared/schema";
 import { calculateLineItem, calculateTotals } from "@/lib/calculations";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { getEspoContext } from "@/lib/espo-context";
 
 const STATUSES = ["Draft", "Approved", "In Progress", "Completed", "Cancelled"];
 const ENTITY_TYPES = ["Property", "Lead", "Contact", "Account"];
@@ -24,13 +25,15 @@ export default function ProjectForm() {
   const { toast } = useToast();
   const isEdit = !!id;
 
+  const espoCtx = useMemo(() => getEspoContext(), []);
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Draft");
   const [currency, setCurrency] = useState("GBP");
-  const [associatedEntityType, setAssociatedEntityType] = useState("");
-  const [associatedEntityId, setAssociatedEntityId] = useState("");
-  const [associatedEntityName, setAssociatedEntityName] = useState("");
+  const [associatedEntityType, setAssociatedEntityType] = useState(espoCtx.entityType || "");
+  const [associatedEntityId, setAssociatedEntityId] = useState(espoCtx.entityId || "");
+  const [associatedEntityName, setAssociatedEntityName] = useState(espoCtx.entityName || "");
   const [notes, setNotes] = useState("");
   const [lineItems, setLineItems] = useState<RefurbLineItem[]>([
     calculateLineItem({ id: crypto.randomUUID(), description: "", quantity: 1, unitCost: 0, vatRate: 20 }),
@@ -40,6 +43,12 @@ export default function ProjectForm() {
     queryKey: ["/api/refurb-projects", id],
     enabled: isEdit,
   });
+
+  useEffect(() => {
+    if (!isEdit && espoCtx.entityName) {
+      setName(`${espoCtx.entityName} - Refurbishment`);
+    }
+  }, [isEdit, espoCtx.entityName]);
 
   useEffect(() => {
     if (project) {
@@ -149,7 +158,7 @@ export default function ProjectForm() {
         }
       />
 
-      <form onSubmit={handleSubmit} className="p-5 space-y-4 max-w-6xl">
+      <form onSubmit={handleSubmit} className="p-3 sm:p-5 space-y-4 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             <EspoPanel title="Project Details" icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>

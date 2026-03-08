@@ -29,14 +29,15 @@ export default function ProjectList() {
         actions={
           <Link href="/projects/new">
             <Button size="sm" data-testid="button-create-project">
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
-              Create Refurb Project
+              <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Create Refurb Project</span>
+              <span className="sm:hidden">New</span>
             </Button>
           </Link>
         }
       />
 
-      <div className="p-5">
+      <div className="p-3 sm:p-5">
         <div className="mb-4 flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[240px] max-w-sm">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -75,81 +76,116 @@ export default function ProjectList() {
             <p className="text-muted-foreground">Failed to load refurb projects. Please try again.</p>
           </div>
         ) : filtered && filtered.length > 0 ? (
-          <div className="border rounded-md bg-card" data-testid="project-list-table">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b bg-white dark:bg-card">
-                  <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Project Name</th>
-                  <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Associated Entity</th>
-                  <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden sm:table-cell">Status</th>
-                  <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Total</th>
-                  <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Created</th>
-                  <th className="w-10"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((project) => (
-                  <tr
-                    key={project.id}
-                    className="border-b last:border-b-0 hover-elevate active-elevate-2 cursor-pointer"
-                    data-testid={`row-project-${project.id}`}
-                  >
-                    <td className="py-3 px-4">
-                      <Link href={`/projects/${project.id}`} className="block">
-                        <div className="flex items-center gap-2">
-                          <Hammer className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                          <span className="text-sm font-medium text-primary" data-testid={`text-project-name-${project.id}`}>
-                            {project.name}
-                          </span>
-                        </div>
-                      </Link>
-                    </td>
-                    <td className="py-3 px-4 hidden md:table-cell">
-                      <Link href={`/projects/${project.id}`} className="block">
-                        {project.associatedEntityName ? (
-                          <div className="flex items-center gap-1.5">
-                            <Building2 className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                            <span className="text-sm text-muted-foreground truncate max-w-[250px]">
-                              {project.associatedEntityName}
-                            </span>
-                            <span className="text-xs text-muted-foreground/60">
-                              ({project.associatedEntityType})
+          <>
+            <div className="hidden sm:block border rounded-md bg-card" data-testid="project-list-table">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-white dark:bg-card">
+                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Project Name</th>
+                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Associated Entity</th>
+                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                    <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Total</th>
+                    <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Created</th>
+                    <th className="w-10"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((project) => (
+                    <tr
+                      key={project.id}
+                      className="border-b last:border-b-0 hover-elevate active-elevate-2 cursor-pointer"
+                      data-testid={`row-project-${project.id}`}
+                    >
+                      <td className="py-3 px-4">
+                        <Link href={`/projects/${project.id}`} className="block">
+                          <div className="flex items-center gap-2">
+                            <Hammer className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                            <span className="text-sm font-medium text-primary" data-testid={`text-project-name-${project.id}`}>
+                              {project.name}
                             </span>
                           </div>
-                        ) : (
-                          <span className="text-sm text-muted-foreground/50">-</span>
-                        )}
-                      </Link>
-                    </td>
-                    <td className="py-3 px-4 hidden sm:table-cell">
-                      <Link href={`/projects/${project.id}`} className="block">
-                        <StatusBadge status={project.status} />
-                      </Link>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <Link href={`/projects/${project.id}`} className="block">
-                        <span className="text-sm font-semibold tabular-nums" data-testid={`text-project-total-${project.id}`}>
-                          {formatCurrency(project.grandTotal, project.currency)}
+                        </Link>
+                      </td>
+                      <td className="py-3 px-4 hidden md:table-cell">
+                        <Link href={`/projects/${project.id}`} className="block">
+                          {project.associatedEntityName ? (
+                            <div className="flex items-center gap-1.5">
+                              <Building2 className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                              <span className="text-sm text-muted-foreground truncate max-w-[250px]">
+                                {project.associatedEntityName}
+                              </span>
+                              <span className="text-xs text-muted-foreground/60">
+                                ({project.associatedEntityType})
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-muted-foreground/50">-</span>
+                          )}
+                        </Link>
+                      </td>
+                      <td className="py-3 px-4">
+                        <Link href={`/projects/${project.id}`} className="block">
+                          <StatusBadge status={project.status} />
+                        </Link>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <Link href={`/projects/${project.id}`} className="block">
+                          <span className="text-sm font-semibold tabular-nums" data-testid={`text-project-total-${project.id}`}>
+                            {formatCurrency(project.grandTotal, project.currency)}
+                          </span>
+                        </Link>
+                      </td>
+                      <td className="py-3 px-4 text-right hidden lg:table-cell">
+                        <Link href={`/projects/${project.id}`} className="block">
+                          <span className="text-xs text-muted-foreground">{formatDate(project.createdAt)}</span>
+                        </Link>
+                      </td>
+                      <td className="py-3 px-2">
+                        <Link href={`/projects/${project.id}`}>
+                          <Button size="icon" variant="ghost" className="h-7 w-7" data-testid={`button-view-${project.id}`}>
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </Button>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="sm:hidden space-y-2" data-testid="project-list-cards">
+              {filtered.map((project) => (
+                <Link key={project.id} href={`/projects/${project.id}`}>
+                  <div
+                    className="border rounded-md bg-card p-3 active:bg-muted/30 transition-colors"
+                    data-testid={`card-project-${project.id}`}
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Hammer className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                        <span className="text-sm font-medium text-primary truncate" data-testid={`text-project-name-${project.id}`}>
+                          {project.name}
                         </span>
-                      </Link>
-                    </td>
-                    <td className="py-3 px-4 text-right hidden lg:table-cell">
-                      <Link href={`/projects/${project.id}`} className="block">
-                        <span className="text-xs text-muted-foreground">{formatDate(project.createdAt)}</span>
-                      </Link>
-                    </td>
-                    <td className="py-3 px-2">
-                      <Link href={`/projects/${project.id}`}>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" data-testid={`button-view-${project.id}`}>
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </Button>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                      <StatusBadge status={project.status} />
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      {project.associatedEntityName ? (
+                        <span className="text-xs text-muted-foreground truncate">
+                          {project.associatedEntityName}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
+                      <span className="text-sm font-semibold tabular-nums flex-shrink-0" data-testid={`text-project-total-${project.id}`}>
+                        {formatCurrency(project.grandTotal, project.currency)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="border rounded-md p-12 bg-card text-center" data-testid="empty-state">
             <Hammer className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />

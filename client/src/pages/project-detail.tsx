@@ -113,22 +113,22 @@ export default function ProjectDetail() {
         actions={
           <>
             <Button variant="outline" size="sm" onClick={() => navigate("/")} data-testid="button-back">
-              <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
-              Back
+              <ArrowLeft className="h-3.5 w-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
             <Button variant="outline" size="sm" onClick={() => navigate(`/projects/${id}/edit`)} data-testid="button-edit">
-              <Edit className="h-3.5 w-3.5 mr-1.5" />
-              Edit
+              <Edit className="h-3.5 w-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Edit</span>
             </Button>
             <Button variant="outline" size="sm" onClick={() => duplicateMutation.mutate()} disabled={duplicateMutation.isPending} data-testid="button-duplicate">
-              <Copy className="h-3.5 w-3.5 mr-1.5" />
-              Duplicate
+              <Copy className="h-3.5 w-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Duplicate</span>
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="outline" size="sm" data-testid="button-delete">
-                  <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                  Delete
+                  <Trash2 className="h-3.5 w-3.5 sm:mr-1.5" />
+                  <span className="hidden sm:inline">Delete</span>
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -154,7 +154,7 @@ export default function ProjectDetail() {
         }
       />
 
-      <div className="p-5 space-y-4 max-w-6xl">
+      <div className="p-3 sm:p-5 space-y-4 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             <EspoPanel title="Overview" icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>
