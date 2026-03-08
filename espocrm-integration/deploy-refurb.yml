@@ -4,10 +4,10 @@
   become: true
 
   vars:
-    github_repo: "https://github.com/YOUR_ORG/YOUR_REPO.git"
+    github_repo: "https://github.com/snakeyb/Refurb-Project-Manager.git"
     github_branch: "main"
-    refurb_app_url: "https://your-refurb-app.replit.app"
-    espocrm_root: "/var/www/espocrm"
+    refurb_app_url: "https://479ed0c8-5673-43c8-8e02-49f2559e1247-00-29kylpvxjmwor.spock.replit.dev"
+    espocrm_root: "/var/www/html"
     espocrm_user: "www-data"
     espocrm_group: "www-data"
     tmp_clone_dir: "/tmp/refurb-deploy-{{ ansible_date_time.epoch }}"
