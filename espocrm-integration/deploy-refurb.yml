@@ -58,14 +58,6 @@
         - i18n/en_US/RefurbProject.json
         - i18n/en_US/Global.json
 
-    - name: Remove old entity-specific clientDefs that caused errors
-      ansible.builtin.file:
-        path: "{{ espocrm_root }}/custom/Espo/Custom/Resources/metadata/clientDefs/{{ item }}"
-        state: absent
-      loop:
-        - Lead.json
-        - Opportunity.json
-
     - name: Copy button action handler
       ansible.builtin.copy:
         src: "{{ tmp_clone_dir }}/espocrm-integration/client/custom/src/refurb-handler.js"
