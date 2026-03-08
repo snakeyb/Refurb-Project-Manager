@@ -1,9 +1,9 @@
 {
   "menu": {
     "detail": {
-      "buttons": {
-        "__append": true,
-        "refurbProjects": {
+      "buttons": [
+        "__APPEND__",
+        {
           "label": "Refurb Projects",
           "acl": "edit",
           "actionFunction": "custom:views/lead/refurb-button#action",
@@ -11,7 +11,7 @@
             "handler": "custom:views/lead/refurb-button"
           }
         }
-      }
+      ]
     }
   }
 }
