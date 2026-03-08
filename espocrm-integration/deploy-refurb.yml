@@ -38,8 +38,7 @@
         - custom/Espo/Custom/Resources/metadata/clientDefs
         - custom/Espo/Custom/Resources/layouts/RefurbProject
         - custom/Espo/Custom/Resources/i18n/en_US
-        - client/custom/src/views/opportunity
-        - client/custom/src/views/lead
+        - client/custom/src
 
     - name: Copy RefurbProject entity definition files
       ansible.builtin.copy:
@@ -60,35 +59,29 @@
         - i18n/en_US/RefurbProject.json
         - i18n/en_US/Global.json
 
-    - name: Copy Opportunity button handler and set app URL
+    - name: Copy button action handler
       ansible.builtin.copy:
-        src: "{{ tmp_clone_dir }}/espocrm-integration/client/custom/src/views/opportunity/refurb-button.js"
-        dest: "{{ espocrm_root }}/client/custom/src/views/opportunity/refurb-button.js"
+        src: "{{ tmp_clone_dir }}/espocrm-integration/client/custom/src/refurb-handler.js"
+        dest: "{{ espocrm_root }}/client/custom/src/refurb-handler.js"
         owner: "{{ espocrm_user }}"
         group: "{{ espocrm_group }}"
         mode: "0644"
         remote_src: true
 
-    - name: Copy Lead button handler and set app URL
-      ansible.builtin.copy:
-        src: "{{ tmp_clone_dir }}/espocrm-integration/client/custom/src/views/lead/refurb-button.js"
-        dest: "{{ espocrm_root }}/client/custom/src/views/lead/refurb-button.js"
-        owner: "{{ espocrm_user }}"
-        group: "{{ espocrm_group }}"
-        mode: "0644"
-        remote_src: true
-
-    - name: Replace placeholder URL in Opportunity button handler
+    - name: Replace placeholder URL in button handler
       ansible.builtin.replace:
-        path: "{{ espocrm_root }}/client/custom/src/views/opportunity/refurb-button.js"
+        path: "{{ espocrm_root }}/client/custom/src/refurb-handler.js"
         regexp: "\\{\\{REFURB_APP_URL\\}\\}"
         replace: "{{ refurb_app_url }}"
 
-    - name: Replace placeholder URL in Lead button handler
-      ansible.builtin.replace:
-        path: "{{ espocrm_root }}/client/custom/src/views/lead/refurb-button.js"
-        regexp: "\\{\\{REFURB_APP_URL\\}\\}"
-        replace: "{{ refurb_app_url }}"
+    - name: Remove old button handler files if present
+      ansible.builtin.file:
+        path: "{{ espocrm_root }}/client/custom/src/views/{{ item }}/refurb-button.js"
+        state: absent
+      loop:
+        - opportunity
+        - lead
+      ignore_errors: true
 
     - name: Clear EspoCRM cache
       ansible.builtin.command:

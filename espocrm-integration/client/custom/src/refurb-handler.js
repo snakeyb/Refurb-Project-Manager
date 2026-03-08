@@ -1,14 +1,15 @@
-define('custom:views/opportunity/refurb-button', [], function () {
+define(['action-handler'], function (Dep) {
 
-    const REFURB_APP_URL = '{{REFURB_APP_URL}}';
+    var REFURB_APP_URL = '{{REFURB_APP_URL}}';
 
-    return {
-        action: function (data, e) {
-            const model = this.model;
-            const entityType = model.entityType || 'Opportunity';
-            const entityId = model.id;
-            const entityName = model.get('name') || '';
-            const espoUrl = window.location.origin;
+    return class extends Dep {
+
+        openRefurbProjects() {
+            var model = this.view.model;
+            var entityType = model.entityType || model.name;
+            var entityId = model.id;
+            var entityName = model.get('name') || '';
+            var espoUrl = window.location.origin;
 
             var authToken = null;
             var cookies = document.cookie.split(';');
@@ -17,9 +18,11 @@ define('custom:views/opportunity/refurb-button', [], function () {
 
             for (var i = 0; i < cookies.length; i++) {
                 var cookie = cookies[i].trim();
+
                 if (cookie.indexOf('auth-username=') === 0) {
                     username = decodeURIComponent(cookie.substring('auth-username='.length));
                 }
+
                 if (cookie.indexOf('auth-token=') === 0) {
                     token = decodeURIComponent(cookie.substring('auth-token='.length));
                 }
@@ -37,12 +40,14 @@ define('custom:views/opportunity/refurb-button', [], function () {
             });
 
             var hashParams = '';
+
             if (authToken) {
                 hashParams = '#auth=' + encodeURIComponent(authToken) +
                     '&espoUrl=' + encodeURIComponent(espoUrl);
             }
 
             var url = REFURB_APP_URL + '?' + queryParams.toString() + hashParams;
+
             window.open(url, '_blank');
         }
     };

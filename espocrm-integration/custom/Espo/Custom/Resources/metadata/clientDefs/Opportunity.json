@@ -1,17 +1,17 @@
 {
-  "menu": {
-    "detail": {
-      "buttons": [
-        "__APPEND__",
-        {
-          "label": "Refurb Projects",
-          "acl": "edit",
-          "actionFunction": "custom:views/opportunity/refurb-button#action",
-          "data": {
-            "handler": "custom:views/opportunity/refurb-button"
-          }
+    "menu": {
+        "detail": {
+            "buttons": [
+                "__APPEND__",
+                {
+                    "label": "Refurb Projects",
+                    "name": "refurbProjects",
+                    "style": "default",
+                    "acl": "edit",
+                    "handler": "custom:refurb-handler",
+                    "actionFunction": "openRefurbProjects"
+                }
+            ]
         }
-      ]
     }
-  }
 }

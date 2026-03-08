@@ -30,20 +30,19 @@ All refurb project data is stored in the user's own EspoCRM database. The centra
 
 ### Step 1: Configure the App URL
 
-Before installing, replace `{{REFURB_APP_URL}}` in both JS button handler files with your deployed Refurb Projects URL:
+Before installing, replace `{{REFURB_APP_URL}}` in the button handler file with your deployed Refurb Projects URL:
 
-**Files to update:**
-- `client/custom/src/views/opportunity/refurb-button.js`
-- `client/custom/src/views/lead/refurb-button.js`
+**File to update:**
+- `client/custom/src/refurb-handler.js`
 
 Replace:
 ```js
-const REFURB_APP_URL = '{{REFURB_APP_URL}}';
+var REFURB_APP_URL = '{{REFURB_APP_URL}}';
 ```
 
 With your actual deployed URL, e.g.:
 ```js
-const REFURB_APP_URL = 'https://your-refurb-app.replit.app';
+var REFURB_APP_URL = 'https://your-refurb-app.replit.app';
 ```
 
 ### Step 2: Copy All Files to EspoCRM
@@ -67,11 +66,10 @@ This installs:
 - `custom/Espo/Custom/Resources/i18n/en_US/RefurbProject.json` - Field translations
 - `custom/Espo/Custom/Resources/i18n/en_US/Global.json` - Scope name translations
 
-**Button Handlers:**
+**Button Configuration:**
 - `custom/Espo/Custom/Resources/metadata/clientDefs/Opportunity.json` - Button metadata for Opportunity
 - `custom/Espo/Custom/Resources/metadata/clientDefs/Lead.json` - Button metadata for Lead
-- `client/custom/src/views/opportunity/refurb-button.js` - Button handler for Opportunity
-- `client/custom/src/views/lead/refurb-button.js` - Button handler for Lead
+- `client/custom/src/refurb-handler.js` - Button action handler (shared by both entities)
 
 ### Step 3: Clear Cache & Rebuild
 
@@ -117,10 +115,9 @@ To add the button to other entity types (e.g., Contact, Account):
 1. Create a new metadata JSON file:
    `custom/Espo/Custom/Resources/metadata/clientDefs/{EntityType}.json`
 
-2. Create a new button handler:
-   `client/custom/src/views/{entitytype}/refurb-button.js`
+2. Use the same format as Opportunity.json/Lead.json — the shared `refurb-handler.js` works for any entity type automatically
 
-3. Follow the same pattern as the Opportunity/Lead examples
+3. Clear cache and rebuild
 
 ## URL Parameters
 
