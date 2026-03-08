@@ -52,7 +52,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
         <div className="border rounded-md">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-muted/40">
+              <tr className="border-b bg-white dark:bg-card">
                 <th className="text-left py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">#</th>
                 <th className="text-left py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Description</th>
                 <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">Qty</th>
@@ -96,7 +96,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
       <div className="border rounded-md">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-muted/40">
+            <tr className="border-b bg-white dark:bg-card">
               <th className="w-8"></th>
               <th className="text-left py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider">Description</th>
               <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">Qty</th>
@@ -200,7 +200,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
 function TotalsSummary({ subtotal, vatTotal, grandTotal, currency }: { subtotal: number; vatTotal: number; grandTotal: number; currency: string }) {
   return (
     <div className="w-64 ml-auto mt-3" data-testid="totals-summary">
-      <div className="border rounded-md bg-muted/20 p-3 space-y-1.5">
+      <div className="border rounded-md bg-white dark:bg-card p-3 space-y-1.5">
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Subtotal (Net)</span>
           <span className="tabular-nums" data-testid="text-subtotal">{formatCurrency(subtotal, currency)}</span>

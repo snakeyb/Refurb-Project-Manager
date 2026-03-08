@@ -16,7 +16,7 @@ export function EspoPanel({ title, icon, children, defaultOpen = true, actions }
     <div className="border rounded-md bg-card" data-testid={`panel-${title.toLowerCase().replace(/\s+/g, "-")}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left border-b bg-muted/30 rounded-t-md hover-elevate active-elevate-2"
+        className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left border-b bg-white dark:bg-card rounded-t-md hover-elevate active-elevate-2"
         data-testid={`button-toggle-${title.toLowerCase().replace(/\s+/g, "-")}`}
       >
         <div className="flex items-center gap-2">

@@ -13,7 +13,7 @@ interface EspoHeaderProps {
 
 export function EspoHeader({ breadcrumbs, actions }: EspoHeaderProps) {
   return (
-    <div className="border-b bg-card" data-testid="header-breadcrumb">
+    <div className="border-b bg-background" data-testid="header-breadcrumb">
       <div className="flex items-center justify-between gap-4 px-5 py-3">
         <div className="flex items-center gap-2 min-w-0">
           <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />

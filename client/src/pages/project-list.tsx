@@ -78,7 +78,7 @@ export default function ProjectList() {
           <div className="border rounded-md bg-card" data-testid="project-list-table">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-muted/30">
+                <tr className="border-b bg-white dark:bg-card">
                   <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Project Name</th>
                   <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Associated Entity</th>
                   <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden sm:table-cell">Status</th>
