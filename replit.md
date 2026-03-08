@@ -11,7 +11,7 @@ A refurbishment project pricing module designed for PropertyPipeline CRM (EspoCR
 - **Hosting**: Centrally hosted (single deployment for all customers)
 
 ## Auth Flow
-1. User clicks "Refurb Projects" button on a Property/Lead in EspoCRM
+1. User clicks "Refurb Projects" button on an Opportunity/Lead in EspoCRM
 2. Button handler JS reads auth cookies (auth-token, auth-username) from EspoCRM
 3. Constructs base64 Espo-Authorization value
 4. Opens new tab with auth in URL hash fragment (not sent to servers, not logged)
@@ -24,7 +24,7 @@ A refurbishment project pricing module designed for PropertyPipeline CRM (EspoCR
 - Dynamic line items with description, quantity, unit cost, VAT rate
 - Automatic calculations: net total, VAT amount, grand total per line and overall
 - Multiple VAT rates: 0% (exempt), 5% (reduced), 20% (standard)
-- Associate projects with Property, Lead, Contact, or Account entities
+- Associate projects with Opportunity, Lead, Contact, or Account entities
 - Status workflow: Draft, Approved, In Progress, Completed, Cancelled
 - Project duplication
 - GBP/EUR/USD currency support
@@ -34,7 +34,7 @@ A refurbishment project pricing module designed for PropertyPipeline CRM (EspoCR
 
 ## EspoCRM Integration
 - **Custom Entity**: RefurbProject entity with all fields (installed in each EspoCRM instance)
-- **Button**: Custom button on Property/Lead detail views opens this app in new tab
+- **Button**: Custom button on Opportunity/Lead detail views opens this app in new tab
 - **Auth**: Seamless — uses existing EspoCRM session, no re-login needed
 - **Data Flow**: App backend → EspoCRM REST API (no local database)
 - **Integration files**: `espocrm-integration/` directory with complete installation package

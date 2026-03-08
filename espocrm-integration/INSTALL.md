@@ -4,14 +4,14 @@
 
 This integration adds:
 1. A **RefurbProject** custom entity to your EspoCRM instance for storing refurbishment project data
-2. A **"Refurb Projects" button** on Property and Lead detail views that opens the Refurb Projects UI in a new tab
+2. A **"Refurb Projects" button** on Opportunity and Lead detail views that opens the Refurb Projects UI in a new tab
 3. Seamless authentication — the user's existing EspoCRM session is passed to the app automatically
 
 All refurb project data is stored in the user's own EspoCRM database. The centrally hosted app has no database of its own — it proxies all operations to the user's EspoCRM instance.
 
 ## How It Works
 
-1. User opens a Property or Lead record in PropertyPipeline CRM
+1. User opens an Opportunity or Lead record in PropertyPipeline CRM
 2. Clicks the "Refurb Projects" button in the detail view toolbar
 3. A new tab opens with the Refurb Projects app, passing:
    - **Auth token** (from the user's existing CRM session, via URL hash fragment)
@@ -33,7 +33,7 @@ All refurb project data is stored in the user's own EspoCRM database. The centra
 Before installing, replace `{{REFURB_APP_URL}}` in both JS button handler files with your deployed Refurb Projects URL:
 
 **Files to update:**
-- `client/custom/src/views/property/refurb-button.js`
+- `client/custom/src/views/opportunity/refurb-button.js`
 - `client/custom/src/views/lead/refurb-button.js`
 
 Replace:
@@ -68,9 +68,9 @@ This installs:
 - `custom/Espo/Custom/Resources/i18n/en_US/Global.json` - Scope name translations
 
 **Button Handlers:**
-- `custom/Espo/Custom/Resources/metadata/clientDefs/Property.json` - Button metadata for Property
+- `custom/Espo/Custom/Resources/metadata/clientDefs/Opportunity.json` - Button metadata for Opportunity
 - `custom/Espo/Custom/Resources/metadata/clientDefs/Lead.json` - Button metadata for Lead
-- `client/custom/src/views/property/refurb-button.js` - Button handler for Property
+- `client/custom/src/views/opportunity/refurb-button.js` - Button handler for Opportunity
 - `client/custom/src/views/lead/refurb-button.js` - Button handler for Lead
 
 ### Step 3: Clear Cache & Rebuild
@@ -90,7 +90,7 @@ php rebuild.php
 This will:
 - Create the `refurb_project` database table automatically
 - Register the RefurbProject entity in the system
-- Add the buttons to Property and Lead detail views
+- Add the buttons to Opportunity and Lead detail views
 
 ### Step 4: Configure Roles & Permissions
 
@@ -100,7 +100,7 @@ This will:
 
 ### Step 5: Verify
 
-1. Navigate to any Property record's detail view
+1. Navigate to any Opportunity record's detail view
 2. You should see a "Refurb Projects" button in the toolbar
 3. Click it — a new tab should open with the Refurb Projects app
 4. The associated entity fields should be pre-populated
@@ -120,7 +120,7 @@ To add the button to other entity types (e.g., Contact, Account):
 2. Create a new button handler:
    `client/custom/src/views/{entitytype}/refurb-button.js`
 
-3. Follow the same pattern as the Property/Lead examples
+3. Follow the same pattern as the Opportunity/Lead examples
 
 ## URL Parameters
 
@@ -128,7 +128,7 @@ The app accepts these URL parameters:
 
 | Parameter    | Description                           | Example                          |
 |-------------|---------------------------------------|----------------------------------|
-| entityType  | The CRM entity type                   | Property, Lead                   |
+| entityType  | The CRM entity type                   | Opportunity, Lead                |
 | entityId    | The CRM record ID                     | 5f8a3b2c1d4e5f6a               |
 | entityName  | The record's display name             | 14 Victoria Road                 |
 | espoUrl     | The base URL of the CRM instance      | https://crm.propertypipeline.com |
@@ -137,7 +137,7 @@ Auth credentials are passed via the URL hash fragment (not logged or sent to ser
 
 ## Merging with Existing clientDefs
 
-If your Property or Lead entity already has a custom `clientDefs` JSON file, you'll need to merge the button configuration manually rather than replacing the file. Add the `refurbProjects` entry into the existing `menu.detail.buttons` object.
+If your Opportunity or Lead entity already has a custom `clientDefs` JSON file, you'll need to merge the button configuration manually rather than replacing the file. Add the `refurbProjects` entry into the existing `menu.detail.buttons` object.
 
 ## Merging with Existing Global.json
 
@@ -151,7 +151,7 @@ If you already have a custom `i18n/en_US/Global.json`, merge the `scopeNames` an
 | status             | enum    | Draft, Approved, In Progress, Completed, Cancelled |
 | description        | text    | Project description                      |
 | currency           | varchar | GBP, EUR, USD                           |
-| associatedEntityType | varchar | Entity type (Property, Lead, etc.)     |
+| associatedEntityType | varchar | Entity type (Opportunity, Lead, etc.)  |
 | associatedEntityId | varchar | EspoCRM entity record ID                |
 | associatedEntityName | varchar | Entity display name                    |
 | lineItems          | text    | JSON string containing line item array   |

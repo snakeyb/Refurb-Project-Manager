@@ -17,7 +17,7 @@ import { useState, useEffect, useMemo } from "react";
 import { getEspoContext } from "@/lib/espo-context";
 
 const STATUSES = ["Draft", "Approved", "In Progress", "Completed", "Cancelled"];
-const ENTITY_TYPES = ["Property", "Lead", "Contact", "Account"];
+const ENTITY_TYPES = ["Opportunity", "Lead", "Contact", "Account"];
 
 export default function ProjectForm() {
   const { id } = useParams<{ id: string }>();

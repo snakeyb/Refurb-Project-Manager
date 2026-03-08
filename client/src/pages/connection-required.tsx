@@ -14,7 +14,7 @@ export function ConnectionRequired() {
           </h2>
           <p className="text-sm text-muted-foreground mb-4">
             This app needs to be opened from your PropertyPipeline CRM to connect to your data.
-            Please navigate to a Property or Lead record in your CRM and click the
+            Please navigate to an Opportunity or Lead record in your CRM and click the
             "Refurb Projects" button to launch this module.
           </p>
           <div className="border-t pt-4 mt-4">

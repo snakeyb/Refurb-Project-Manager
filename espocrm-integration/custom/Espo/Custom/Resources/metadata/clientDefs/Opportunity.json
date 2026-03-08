@@ -6,9 +6,9 @@
         "refurbProjects": {
           "label": "Refurb Projects",
           "acl": "edit",
-          "actionFunction": "custom:views/property/refurb-button#action",
+          "actionFunction": "custom:views/opportunity/refurb-button#action",
           "data": {
-            "handler": "custom:views/property/refurb-button"
+            "handler": "custom:views/opportunity/refurb-button"
           }
         }
       }

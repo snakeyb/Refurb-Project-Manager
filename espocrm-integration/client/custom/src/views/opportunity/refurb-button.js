@@ -1,11 +1,11 @@
-define('custom:views/property/refurb-button', [], function () {
+define('custom:views/opportunity/refurb-button', [], function () {
 
     const REFURB_APP_URL = '{{REFURB_APP_URL}}';
 
     return {
         action: function (data, e) {
             const model = this.model;
-            const entityType = model.entityType || 'Property';
+            const entityType = model.entityType || 'Opportunity';
             const entityId = model.id;
             const entityName = model.get('name') || '';
             const espoUrl = window.location.origin;
