@@ -1,0 +1,27 @@
+[
+  {
+    "name": "name",
+    "link": true,
+    "width": 30
+  },
+  {
+    "name": "status",
+    "width": 15
+  },
+  {
+    "name": "associatedEntityName",
+    "width": 20
+  },
+  {
+    "name": "grandTotal",
+    "width": 15
+  },
+  {
+    "name": "currency",
+    "width": 10
+  },
+  {
+    "name": "createdAt",
+    "width": 10
+  }
+]

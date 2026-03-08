@@ -1,7 +1,7 @@
 import { Building2, ChevronRight, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { getEspoContext, buildEspoEntityUrl, hasEspoContext } from "@/lib/espo-context";
+import { getEspoContext, buildEspoEntityUrl, hasEspoEntityContext } from "@/lib/espo-context";
 
 interface BreadcrumbItem {
   label: string;
@@ -15,7 +15,7 @@ interface EspoHeaderProps {
 
 export function EspoHeader({ breadcrumbs, actions }: EspoHeaderProps) {
   const espoCtx = getEspoContext();
-  const backToCrmUrl = espoCtx.espoUrl && espoCtx.entityType && espoCtx.entityId
+  const backToCrmUrl = hasEspoEntityContext() && espoCtx.espoUrl && espoCtx.entityType && espoCtx.entityId
     ? buildEspoEntityUrl(espoCtx.espoUrl, espoCtx.entityType, espoCtx.entityId)
     : null;
   const showBackToCrm = !!backToCrmUrl;

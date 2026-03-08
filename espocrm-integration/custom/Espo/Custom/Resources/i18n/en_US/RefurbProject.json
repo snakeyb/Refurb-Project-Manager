@@ -1,0 +1,31 @@
+{
+  "labels": {
+    "Create RefurbProject": "Create Refurb Project"
+  },
+  "fields": {
+    "name": "Name",
+    "status": "Status",
+    "description": "Description",
+    "currency": "Currency",
+    "associatedEntityType": "Associated Entity Type",
+    "associatedEntityId": "Associated Entity ID",
+    "associatedEntityName": "Associated Entity Name",
+    "lineItems": "Line Items",
+    "subtotal": "Subtotal",
+    "vatTotal": "VAT Total",
+    "grandTotal": "Grand Total",
+    "notes": "Notes",
+    "createdAt": "Created At",
+    "modifiedAt": "Modified At"
+  },
+  "links": {},
+  "options": {
+    "status": {
+      "Draft": "Draft",
+      "Approved": "Approved",
+      "In Progress": "In Progress",
+      "Completed": "Completed",
+      "Cancelled": "Cancelled"
+    }
+  }
+}

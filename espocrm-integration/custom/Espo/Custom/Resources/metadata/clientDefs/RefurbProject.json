@@ -1,0 +1,6 @@
+{
+  "controller": "controllers/record",
+  "iconClass": "fas fa-hard-hat",
+  "color": "#6A8DCC",
+  "kanbanViewMode": false
+}

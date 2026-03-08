@@ -10,14 +10,39 @@ define('custom:views/property/refurb-button', [], function () {
             const entityName = model.get('name') || '';
             const espoUrl = window.location.origin;
 
-            const params = new URLSearchParams({
+            var authToken = null;
+            var cookies = document.cookie.split(';');
+            var username = '';
+            var token = '';
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.indexOf('auth-username=') === 0) {
+                    username = decodeURIComponent(cookie.substring('auth-username='.length));
+                }
+                if (cookie.indexOf('auth-token=') === 0) {
+                    token = decodeURIComponent(cookie.substring('auth-token='.length));
+                }
+            }
+
+            if (username && token) {
+                authToken = btoa(username + ':' + token);
+            }
+
+            var queryParams = new URLSearchParams({
                 entityType: entityType,
                 entityId: entityId,
                 entityName: entityName,
                 espoUrl: espoUrl
             });
 
-            const url = REFURB_APP_URL + '?' + params.toString();
+            var hashParams = '';
+            if (authToken) {
+                hashParams = '#auth=' + encodeURIComponent(authToken) +
+                    '&espoUrl=' + encodeURIComponent(espoUrl);
+            }
+
+            var url = REFURB_APP_URL + '?' + queryParams.toString() + hashParams;
             window.open(url, '_blank');
         }
     };

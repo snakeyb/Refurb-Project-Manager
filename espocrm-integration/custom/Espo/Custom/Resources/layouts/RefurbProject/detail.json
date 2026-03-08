@@ -1,0 +1,43 @@
+[
+  {
+    "label": "Overview",
+    "rows": [
+      [
+        { "name": "name" },
+        { "name": "status" }
+      ],
+      [
+        { "name": "associatedEntityType" },
+        { "name": "associatedEntityName" }
+      ],
+      [
+        { "name": "currency" },
+        false
+      ],
+      [
+        { "name": "description", "fullWidth": true }
+      ]
+    ]
+  },
+  {
+    "label": "Financials",
+    "rows": [
+      [
+        { "name": "subtotal" },
+        { "name": "vatTotal" }
+      ],
+      [
+        { "name": "grandTotal" },
+        false
+      ]
+    ]
+  },
+  {
+    "label": "Notes",
+    "rows": [
+      [
+        { "name": "notes", "fullWidth": true }
+      ]
+    ]
+  }
+]

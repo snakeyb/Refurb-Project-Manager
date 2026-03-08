@@ -1,25 +1,44 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import type { Express, Request, Response } from "express";
+import { type Server } from "http";
+import { EspoCRMStorage } from "./storage";
 import { insertRefurbProjectSchema } from "@shared/schema";
-import { seedDatabase } from "./seed";
+
+function getEspoStorage(req: Request): EspoCRMStorage | null {
+  const espoUrl = req.headers["x-espo-url"] as string;
+  const espoAuth = req.headers["x-espo-auth"] as string;
+  if (!espoUrl || !espoAuth) return null;
+  return new EspoCRMStorage(espoUrl, espoAuth);
+}
+
+function requireEspo(req: Request, res: Response): EspoCRMStorage | null {
+  const storage = getEspoStorage(req);
+  if (!storage) {
+    res.status(401).json({ message: "EspoCRM connection required. Please open this app from your CRM." });
+    return null;
+  }
+  return storage;
+}
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  await seedDatabase();
-
-  app.get("/api/refurb-projects", async (_req, res) => {
+  app.get("/api/refurb-projects", async (req, res) => {
+    const storage = requireEspo(req, res);
+    if (!storage) return;
     try {
       const projects = await storage.getRefurbProjects();
       res.json(projects);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch refurb projects" });
+      const msg = error instanceof Error ? error.message : "Failed to fetch refurb projects";
+      const status = msg.includes("401") ? 401 : 500;
+      res.status(status).json({ message: msg });
     }
   });
 
   app.get("/api/refurb-projects/:id", async (req, res) => {
+    const storage = requireEspo(req, res);
+    if (!storage) return;
     try {
       const project = await storage.getRefurbProject(req.params.id);
       if (!project) {
@@ -27,11 +46,14 @@ export async function registerRoutes(
       }
       res.json(project);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch refurb project" });
+      const msg = error instanceof Error ? error.message : "Failed to fetch refurb project";
+      res.status(500).json({ message: msg });
     }
   });
 
   app.post("/api/refurb-projects", async (req, res) => {
+    const storage = requireEspo(req, res);
+    if (!storage) return;
     try {
       const parsed = insertRefurbProjectSchema.safeParse(req.body);
       if (!parsed.success) {
@@ -40,17 +62,20 @@ export async function registerRoutes(
       const project = await storage.createRefurbProject(parsed.data);
       res.status(201).json(project);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create refurb project" });
+      const msg = error instanceof Error ? error.message : "Failed to create refurb project";
+      res.status(500).json({ message: msg });
     }
   });
 
   app.patch("/api/refurb-projects/:id", async (req, res) => {
+    const storage = requireEspo(req, res);
+    if (!storage) return;
     try {
-      const existing = await storage.getRefurbProject(req.params.id);
-      if (!existing) {
-        return res.status(404).json({ message: "Refurb project not found" });
+      const parsed = insertRefurbProjectSchema.partial().safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid data", errors: parsed.error.flatten() });
       }
-      const data = { ...req.body };
+      const data = { ...parsed.data };
       if (data.lineItems && Array.isArray(data.lineItems)) {
         let subtotal = 0;
         let vatTotal = 0;
@@ -69,13 +94,19 @@ export async function registerRoutes(
         data.grandTotal = String(Math.round((subtotal + vatTotal) * 100) / 100);
       }
       const project = await storage.updateRefurbProject(req.params.id, data);
+      if (!project) {
+        return res.status(404).json({ message: "Refurb project not found" });
+      }
       res.json(project);
     } catch (error) {
-      res.status(500).json({ message: "Failed to update refurb project" });
+      const msg = error instanceof Error ? error.message : "Failed to update refurb project";
+      res.status(500).json({ message: msg });
     }
   });
 
   app.delete("/api/refurb-projects/:id", async (req, res) => {
+    const storage = requireEspo(req, res);
+    if (!storage) return;
     try {
       const deleted = await storage.deleteRefurbProject(req.params.id);
       if (!deleted) {
@@ -83,7 +114,8 @@ export async function registerRoutes(
       }
       res.json({ message: "Refurb project deleted" });
     } catch (error) {
-      res.status(500).json({ message: "Failed to delete refurb project" });
+      const msg = error instanceof Error ? error.message : "Failed to delete refurb project";
+      res.status(500).json({ message: msg });
     }
   });
 
