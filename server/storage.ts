@@ -75,13 +75,15 @@ function validateEspoUrl(url: string): boolean {
 export class EspoCRMStorage implements IStorage {
   private baseUrl: string;
   private authHeader: string;
+  private authSecret: string | null;
 
-  constructor(espoUrl: string, authToken: string) {
+  constructor(espoUrl: string, authToken: string, authSecret?: string) {
     if (!validateEspoUrl(espoUrl)) {
       throw new Error("Invalid EspoCRM URL");
     }
     this.baseUrl = espoUrl.replace(/\/+$/, "") + "/api/v1";
     this.authHeader = authToken;
+    this.authSecret = authSecret || null;
   }
 
   private async request(method: string, path: string, body?: unknown): Promise<unknown> {
@@ -89,7 +91,11 @@ export class EspoCRMStorage implements IStorage {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       "Espo-Authorization": this.authHeader,
+      "X-Espo-Authorization-By-Token": "true",
     };
+    if (this.authSecret) {
+      headers["Cookie"] = `auth-token-secret=${this.authSecret}`;
+    }
 
     const res = await fetch(url, {
       method,

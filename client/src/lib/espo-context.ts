@@ -4,6 +4,7 @@ export interface EspoContext {
   entityName?: string;
   espoUrl?: string;
   authToken?: string;
+  authSecret?: string;
 }
 
 let cachedContext: EspoContext | null = null;
@@ -20,6 +21,7 @@ export function initEspoContext(): EspoContext {
     entityName: params.get("entityName") || hashParams.get("entityName") || undefined,
     espoUrl: params.get("espoUrl") || hashParams.get("espoUrl") || undefined,
     authToken: hashParams.get("auth") || undefined,
+    authSecret: hashParams.get("authSecret") || undefined,
   };
 
   if (ctx.authToken || ctx.espoUrl) {

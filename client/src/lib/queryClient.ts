@@ -6,6 +6,7 @@ function getEspoHeaders(): Record<string, string> {
   const headers: Record<string, string> = {};
   if (ctx.espoUrl) headers["x-espo-url"] = ctx.espoUrl;
   if (ctx.authToken) headers["x-espo-auth"] = ctx.authToken;
+  if (ctx.authSecret) headers["x-espo-secret"] = ctx.authSecret;
   return headers;
 }
 

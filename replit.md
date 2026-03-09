@@ -12,12 +12,14 @@ A refurbishment project pricing module designed for PropertyPipeline CRM (EspoCR
 
 ## Auth Flow
 1. User clicks "Refurb Projects" button on an Opportunity/Lead in EspoCRM
-2. Button handler JS reads auth cookies (auth-token, auth-username) from EspoCRM
-3. Constructs base64 Espo-Authorization value
-4. Opens new tab with auth in URL hash fragment (not sent to servers, not logged)
-5. React app reads hash, stores auth in memory, clears URL
-6. All API calls include x-espo-url and x-espo-auth custom headers
-7. Express backend proxies to EspoCRM REST API with Espo-Authorization header
+2. Button handler JS reads auth cookies (auth-token, auth-username, auth-token-secret) from EspoCRM
+3. Gets username from EspoCRM user object (`this.view.getUser().get('userName')`) as fallback if cookies are HttpOnly
+4. Constructs base64 Espo-Authorization value (username:token)
+5. Opens new tab with auth + authSecret in URL hash fragment (not sent to servers, not logged)
+6. React app reads hash, stores auth in memory, clears URL
+7. All API calls include x-espo-url, x-espo-auth, and x-espo-secret custom headers
+8. Express backend proxies to EspoCRM REST API with Espo-Authorization header + auth-token-secret cookie
+9. EspoCRM 8.x requires both the auth header AND the auth-token-secret cookie for authentication
 
 ## Key Features
 - Refurb project CRUD via EspoCRM API proxy

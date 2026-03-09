@@ -6,8 +6,9 @@ import { insertRefurbProjectSchema } from "@shared/schema";
 function getEspoStorage(req: Request): EspoCRMStorage | null {
   const espoUrl = req.headers["x-espo-url"] as string;
   const espoAuth = req.headers["x-espo-auth"] as string;
+  const espoSecret = req.headers["x-espo-secret"] as string | undefined;
   if (!espoUrl || !espoAuth) return null;
-  return new EspoCRMStorage(espoUrl, espoAuth);
+  return new EspoCRMStorage(espoUrl, espoAuth, espoSecret);
 }
 
 function requireEspo(req: Request, res: Response): EspoCRMStorage | null {

@@ -17,25 +17,44 @@ define(['action-handler'], function (Dep) {
             var entityName = model.get('name') || '';
             var espoUrl = window.location.origin;
 
+            var username = this.view.getUser().get('userName') || '';
             var authToken = null;
+            var authSecret = null;
+
             var cookies = document.cookie.split(';');
-            var username = '';
-            var token = '';
+            var cookieToken = '';
+            var cookieSecret = '';
+            var cookieUsername = '';
 
             for (var i = 0; i < cookies.length; i++) {
                 var cookie = cookies[i].trim();
 
                 if (cookie.indexOf('auth-username=') === 0) {
-                    username = decodeURIComponent(cookie.substring('auth-username='.length));
+                    cookieUsername = decodeURIComponent(cookie.substring('auth-username='.length));
                 }
 
                 if (cookie.indexOf('auth-token=') === 0) {
-                    token = decodeURIComponent(cookie.substring('auth-token='.length));
+                    cookieToken = decodeURIComponent(cookie.substring('auth-token='.length));
+                }
+
+                if (cookie.indexOf('auth-token-secret=') === 0) {
+                    cookieSecret = decodeURIComponent(cookie.substring('auth-token-secret='.length));
                 }
             }
 
-            if (username && token) {
-                authToken = btoa(username + ':' + token);
+            if (cookieUsername) {
+                username = cookieUsername;
+            }
+
+            if (cookieToken) {
+                authToken = btoa(username + ':' + cookieToken);
+                authSecret = cookieSecret || null;
+            }
+
+            if (!authToken) {
+                Espo.Ui.error('Could not read authentication credentials. Please re-login and try again.');
+
+                return;
             }
 
             var queryParams = new URLSearchParams({
@@ -45,14 +64,16 @@ define(['action-handler'], function (Dep) {
                 espoUrl: espoUrl
             });
 
-            var hashParams = '';
+            var hashParts = [
+                'auth=' + encodeURIComponent(authToken),
+                'espoUrl=' + encodeURIComponent(espoUrl)
+            ];
 
-            if (authToken) {
-                hashParams = '#auth=' + encodeURIComponent(authToken) +
-                    '&espoUrl=' + encodeURIComponent(espoUrl);
+            if (authSecret) {
+                hashParts.push('authSecret=' + encodeURIComponent(authSecret));
             }
 
-            var url = REFURB_APP_URL + '?' + queryParams.toString() + hashParams;
+            var url = REFURB_APP_URL + '?' + queryParams.toString() + '#' + hashParts.join('&');
 
             window.open(url, '_blank');
         }
