@@ -1,0 +1,7 @@
+[
+    {
+        "route": "/RefurbAuth",
+        "method": "get",
+        "actionClassName": "Espo\\Custom\\Api\\RefurbAuth"
+    }
+]

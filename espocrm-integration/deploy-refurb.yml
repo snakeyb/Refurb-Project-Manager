@@ -40,6 +40,7 @@
         - custom/Espo/Custom/Resources/i18n/en_US
         - custom/Espo/Custom/Controllers
         - custom/Espo/Custom/Entities
+        - custom/Espo/Custom/Api
         - client/custom/src
 
     - name: Copy RefurbProject entity definition files
@@ -71,6 +72,16 @@
       loop:
         - Controllers/RefurbProject.php
         - Entities/RefurbProject.php
+        - Api/RefurbAuth.php
+
+    - name: Copy custom routes definition
+      ansible.builtin.copy:
+        src: "{{ tmp_clone_dir }}/espocrm-integration/custom/Espo/Custom/Resources/routes.json"
+        dest: "{{ espocrm_root }}/custom/Espo/Custom/Resources/routes.json"
+        owner: "{{ espocrm_user }}"
+        group: "{{ espocrm_group }}"
+        mode: "0644"
+        remote_src: true
 
     - name: Copy button action handler
       ansible.builtin.copy:

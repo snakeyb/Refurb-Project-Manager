@@ -34,10 +34,6 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   app.get("/api/refurb-projects", async (req, res) => {
-    const espoUrl = req.headers["x-espo-url"] as string;
-    const espoAuth = req.headers["x-espo-auth"] as string;
-    const espoSecret = req.headers["x-espo-secret"] as string | undefined;
-    console.log(`[debug] GET /api/refurb-projects - espoUrl: ${espoUrl ? 'present' : 'missing'}, espoAuth: ${espoAuth ? espoAuth.substring(0, 10) + '...' : 'missing'}, espoSecret: ${espoSecret ? 'present(' + espoSecret.length + ' chars)' : 'MISSING'}`);
     const storage = requireEspo(req, res);
     if (!storage) return;
     try {
