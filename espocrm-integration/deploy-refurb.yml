@@ -53,12 +53,19 @@
         remote_src: true
       loop:
         - metadata/entityDefs/RefurbProject.json
+        - metadata/entityDefs/Lead.json
+        - metadata/entityDefs/Opportunity.json
         - metadata/scopes/RefurbProject.json
         - metadata/clientDefs/RefurbProject.json
+        - metadata/clientDefs/Lead.json
+        - metadata/clientDefs/Opportunity.json
         - metadata/clientDefs/Global.json
         - layouts/RefurbProject/list.json
+        - layouts/RefurbProject/listSmall.json
         - layouts/RefurbProject/detail.json
         - i18n/en_US/RefurbProject.json
+        - i18n/en_US/Lead.json
+        - i18n/en_US/Opportunity.json
         - i18n/en_US/Global.json
 
     - name: Copy RefurbProject PHP classes

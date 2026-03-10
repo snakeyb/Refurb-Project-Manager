@@ -7,8 +7,8 @@
         { "name": "status" }
       ],
       [
-        { "name": "associatedEntityType" },
-        { "name": "associatedEntityName" }
+        { "name": "lead" },
+        { "name": "opportunity" }
       ],
       [
         { "name": "currency" },

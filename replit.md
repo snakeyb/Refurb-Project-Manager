@@ -12,8 +12,8 @@ A refurbishment project pricing module designed for PropertyPipeline CRM (EspoCR
 
 ## Auth Flow
 1. User clicks "Refurb Projects" button on an Opportunity/Lead in EspoCRM
-2. Button handler JS reads auth cookies (auth-token, auth-username, auth-token-secret) from EspoCRM
-3. Gets username from EspoCRM user object (`this.view.getUser().get('userName')`) as fallback if cookies are HttpOnly
+2. Button handler calls `Espo.Ajax.getRequest('RefurbAuth')` to retrieve the HttpOnly `auth-token-secret` cookie via a server-side API endpoint
+3. Gets username from EspoCRM user object (`this.view.getUser().get('userName')`) and auth-token from cookies
 4. Constructs base64 Espo-Authorization value (username:token)
 5. Opens new tab with auth + authSecret in URL hash fragment (not sent to servers, not logged)
 6. React app reads hash, stores auth in memory, clears URL
@@ -36,8 +36,11 @@ A refurbishment project pricing module designed for PropertyPipeline CRM (EspoCR
 
 ## EspoCRM Integration
 - **Custom Entity**: RefurbProject entity with all fields (installed in each EspoCRM instance)
+- **Relationships**: Many-to-one links from RefurbProject to Lead and Opportunity (Property)
+- **Bottom Panels**: Lead and Opportunity detail views show "Refurb Projects" relationship panel
 - **Button**: Custom button on Opportunity/Lead detail views opens this app in new tab
 - **Auth**: Seamless — uses existing EspoCRM session, no re-login needed
+- **Auth Secret**: Custom `/api/v1/RefurbAuth` endpoint retrieves HttpOnly auth-token-secret cookie server-side
 - **Data Flow**: App backend → EspoCRM REST API (no local database)
 - **Integration files**: `espocrm-integration/` directory with complete installation package
 

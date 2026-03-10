@@ -1,0 +1,16 @@
+{
+  "bottomPanels": {
+    "detail": [
+      {
+        "name": "refurbProjects",
+        "label": "Refurb Projects",
+        "view": "views/record/panels/relationship",
+        "link": "refurbProjects",
+        "select": false,
+        "create": false,
+        "rowActionsView": "views/record/row-actions/relationship-no-unlink",
+        "order": 20
+      }
+    ]
+  }
+}

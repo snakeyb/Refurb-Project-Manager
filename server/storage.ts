@@ -22,14 +22,28 @@ function parseLineItems(raw: unknown): RefurbLineItem[] {
 }
 
 function mapEspoToProject(record: Record<string, unknown>): RefurbProject {
+  let associatedEntityType = record.associatedEntityType ? String(record.associatedEntityType) : null;
+  let associatedEntityId = record.associatedEntityId ? String(record.associatedEntityId) : null;
+  let associatedEntityName = record.associatedEntityName ? String(record.associatedEntityName) : null;
+
+  if (record.leadId && !associatedEntityId) {
+    associatedEntityType = "Lead";
+    associatedEntityId = String(record.leadId);
+    associatedEntityName = record.leadName ? String(record.leadName) : associatedEntityName;
+  } else if (record.opportunityId && !associatedEntityId) {
+    associatedEntityType = "Opportunity";
+    associatedEntityId = String(record.opportunityId);
+    associatedEntityName = record.opportunityName ? String(record.opportunityName) : associatedEntityName;
+  }
+
   return {
     id: String(record.id || ""),
     name: String(record.name || ""),
     description: record.description ? String(record.description) : null,
     status: String(record.status || "Draft"),
-    associatedEntityType: record.associatedEntityType ? String(record.associatedEntityType) : null,
-    associatedEntityId: record.associatedEntityId ? String(record.associatedEntityId) : null,
-    associatedEntityName: record.associatedEntityName ? String(record.associatedEntityName) : null,
+    associatedEntityType,
+    associatedEntityId,
+    associatedEntityName,
     lineItems: parseLineItems(record.lineItems),
     subtotal: String(record.subtotal ?? "0"),
     vatTotal: String(record.vatTotal ?? "0"),
@@ -49,6 +63,20 @@ function mapProjectToEspo(project: Partial<InsertRefurbProject>): Record<string,
   if (project.associatedEntityType !== undefined) mapped.associatedEntityType = project.associatedEntityType || null;
   if (project.associatedEntityId !== undefined) mapped.associatedEntityId = project.associatedEntityId || null;
   if (project.associatedEntityName !== undefined) mapped.associatedEntityName = project.associatedEntityName || null;
+  if (project.associatedEntityType !== undefined) {
+    const entityType = project.associatedEntityType;
+    const entityId = project.associatedEntityId || null;
+    if (entityType === "Lead") {
+      mapped.leadId = entityId;
+      mapped.opportunityId = null;
+    } else if (entityType === "Opportunity") {
+      mapped.opportunityId = entityId;
+      mapped.leadId = null;
+    } else {
+      mapped.leadId = null;
+      mapped.opportunityId = null;
+    }
+  }
   if (project.lineItems !== undefined) mapped.lineItems = JSON.stringify(project.lineItems);
   if (project.subtotal !== undefined) mapped.subtotal = parseFloat(project.subtotal) || 0;
   if (project.vatTotal !== undefined) mapped.vatTotal = parseFloat(project.vatTotal) || 0;

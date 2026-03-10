@@ -7,6 +7,8 @@
     "status": "Status",
     "description": "Description",
     "currency": "Currency",
+    "lead": "Lead",
+    "opportunity": "Property",
     "associatedEntityType": "Associated Entity Type",
     "associatedEntityId": "Associated Entity ID",
     "associatedEntityName": "Associated Entity Name",
@@ -18,7 +20,11 @@
     "createdAt": "Created At",
     "modifiedAt": "Modified At"
   },
-  "links": {},
+  "links": {
+    "lead": "Lead",
+    "opportunity": "Property",
+    "refurbProjects": "Refurb Projects"
+  },
   "options": {
     "status": {
       "Draft": "Draft",

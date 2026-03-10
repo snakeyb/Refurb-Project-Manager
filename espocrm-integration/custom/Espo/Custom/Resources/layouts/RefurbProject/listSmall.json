@@ -1,0 +1,23 @@
+[
+  {
+    "name": "name",
+    "link": true,
+    "width": 30
+  },
+  {
+    "name": "status",
+    "width": 20
+  },
+  {
+    "name": "grandTotal",
+    "width": 20
+  },
+  {
+    "name": "currency",
+    "width": 10
+  },
+  {
+    "name": "createdAt",
+    "width": 20
+  }
+]

@@ -25,6 +25,12 @@
       "maxLength": 3,
       "default": "GBP"
     },
+    "lead": {
+      "type": "link"
+    },
+    "opportunity": {
+      "type": "link"
+    },
     "associatedEntityType": {
       "type": "varchar",
       "maxLength": 100
@@ -65,7 +71,18 @@
       "readOnly": true
     }
   },
-  "links": {},
+  "links": {
+    "lead": {
+      "type": "belongsTo",
+      "entity": "Lead",
+      "foreign": "refurbProjects"
+    },
+    "opportunity": {
+      "type": "belongsTo",
+      "entity": "Opportunity",
+      "foreign": "refurbProjects"
+    }
+  },
   "collection": {
     "orderBy": "createdAt",
     "order": "desc",

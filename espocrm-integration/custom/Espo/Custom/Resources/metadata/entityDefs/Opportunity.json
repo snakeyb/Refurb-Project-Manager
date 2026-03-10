@@ -1,0 +1,10 @@
+{
+  "links": {
+    "refurbProjects": {
+      "type": "hasMany",
+      "entity": "RefurbProject",
+      "foreign": "opportunity",
+      "layoutRelationshipsDisabled": false
+    }
+  }
+}
