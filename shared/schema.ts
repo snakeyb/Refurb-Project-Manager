@@ -20,10 +20,16 @@ export const insertRefurbProjectSchema = z.object({
   associatedEntityType: z.string().nullable().optional(),
   associatedEntityId: z.string().nullable().optional(),
   associatedEntityName: z.string().nullable().optional(),
-  lineItems: z.array(lineItemSchema).default([]),
-  subtotal: z.string().default("0"),
-  vatTotal: z.string().default("0"),
-  grandTotal: z.string().default("0"),
+  lineItems: z.union([
+    z.array(lineItemSchema),
+    z.string().transform((val) => {
+      try { const parsed = JSON.parse(val); return Array.isArray(parsed) ? parsed : []; }
+      catch { return []; }
+    }),
+  ]).default([]),
+  subtotal: z.union([z.string(), z.number().transform(String)]).default("0"),
+  vatTotal: z.union([z.string(), z.number().transform(String)]).default("0"),
+  grandTotal: z.union([z.string(), z.number().transform(String)]).default("0"),
   currency: z.string().default("GBP"),
   notes: z.string().nullable().optional(),
 });
