@@ -20,6 +20,15 @@ function requireEspo(req: Request, res: Response): EspoCRMStorage | null {
   return storage;
 }
 
+function extractEspoStatus(msg: string): number {
+  const match = msg.match(/EspoCRM API error (\d+)/);
+  if (match) {
+    const code = parseInt(match[1], 10);
+    if (code >= 400 && code < 600) return code;
+  }
+  return 500;
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -32,7 +41,7 @@ export async function registerRoutes(
       res.json(projects);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Failed to fetch refurb projects";
-      const status = msg.includes("401") ? 401 : 500;
+      const status = extractEspoStatus(msg);
       res.status(status).json({ message: msg });
     }
   });
@@ -48,7 +57,8 @@ export async function registerRoutes(
       res.json(project);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Failed to fetch refurb project";
-      res.status(500).json({ message: msg });
+      const status = extractEspoStatus(msg);
+      res.status(status).json({ message: msg });
     }
   });
 
@@ -64,7 +74,8 @@ export async function registerRoutes(
       res.status(201).json(project);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Failed to create refurb project";
-      res.status(500).json({ message: msg });
+      const status = extractEspoStatus(msg);
+      res.status(status).json({ message: msg });
     }
   });
 
@@ -101,7 +112,8 @@ export async function registerRoutes(
       res.json(project);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Failed to update refurb project";
-      res.status(500).json({ message: msg });
+      const status = extractEspoStatus(msg);
+      res.status(status).json({ message: msg });
     }
   });
 
@@ -116,7 +128,8 @@ export async function registerRoutes(
       res.json({ message: "Refurb project deleted" });
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Failed to delete refurb project";
-      res.status(500).json({ message: msg });
+      const status = extractEspoStatus(msg);
+      res.status(status).json({ message: msg });
     }
   });
 
