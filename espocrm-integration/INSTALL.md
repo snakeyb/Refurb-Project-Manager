@@ -58,6 +58,8 @@ cp -r client/ /path/to/espocrm/
 This installs:
 
 **Custom Entity (RefurbProject):**
+- `custom/Espo/Custom/Controllers/RefurbProject.php` - API controller (required for REST API access)
+- `custom/Espo/Custom/Entities/RefurbProject.php` - Entity class
 - `custom/Espo/Custom/Resources/metadata/entityDefs/RefurbProject.json` - Field definitions
 - `custom/Espo/Custom/Resources/metadata/scopes/RefurbProject.json` - Entity scope config
 - `custom/Espo/Custom/Resources/metadata/clientDefs/RefurbProject.json` - Frontend config
