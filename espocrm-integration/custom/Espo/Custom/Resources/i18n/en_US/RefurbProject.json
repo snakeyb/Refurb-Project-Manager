@@ -1,6 +1,8 @@
 {
   "labels": {
-    "Create RefurbProject": "Create Refurb Project"
+    "Create RefurbProject": "Create Refurb Project",
+    "Edit Refurb": "Edit Refurb",
+    "Create Refurb Project": "Create Refurb Project"
   },
   "fields": {
     "name": "Name",

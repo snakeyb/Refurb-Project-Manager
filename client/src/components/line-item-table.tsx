@@ -207,6 +207,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
                 </td>
                 <td className="py-1.5 px-1 text-center">
                   <Button
+                    type="button"
                     size="icon"
                     variant="ghost"
                     onClick={() => removeItem(index)}
@@ -228,6 +229,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs text-muted-foreground font-medium">Item #{index + 1}</span>
               <Button
+                type="button"
                 size="icon"
                 variant="ghost"
                 onClick={() => removeItem(index)}
@@ -303,7 +305,7 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
       </div>
 
       <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-start justify-between gap-4">
-        <Button variant="outline" size="sm" onClick={addItem} data-testid="button-add-line-item">
+        <Button type="button" variant="outline" size="sm" onClick={addItem} data-testid="button-add-line-item">
           <Plus className="h-3.5 w-3.5 mr-1.5" />
           Add Line Item
         </Button>

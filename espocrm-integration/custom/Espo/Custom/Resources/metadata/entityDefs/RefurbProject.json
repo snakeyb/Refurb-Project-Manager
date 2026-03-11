@@ -48,16 +48,16 @@
       "view": "views/fields/text"
     },
     "subtotal": {
-      "type": "float",
-      "default": 0
+      "type": "currency",
+      "readOnly": true
     },
     "vatTotal": {
-      "type": "float",
-      "default": 0
+      "type": "currency",
+      "readOnly": true
     },
     "grandTotal": {
-      "type": "float",
-      "default": 0
+      "type": "currency",
+      "readOnly": true
     },
     "notes": {
       "type": "text"

@@ -2,5 +2,32 @@
   "controller": "controllers/record",
   "iconClass": "fas fa-hard-hat",
   "color": "#6A8DCC",
-  "kanbanViewMode": false
+  "kanbanViewMode": false,
+  "createDisabled": true,
+  "menu": {
+    "detail": {
+      "buttons": [
+        "__APPEND__",
+        {
+          "label": "Edit Refurb",
+          "name": "editRefurbProject",
+          "style": "primary",
+          "handler": "custom:refurb-project-handler",
+          "actionFunction": "editRefurbProject"
+        }
+      ]
+    },
+    "list": {
+      "buttons": [
+        "__APPEND__",
+        {
+          "label": "Create Refurb Project",
+          "name": "createRefurbProject",
+          "style": "primary",
+          "handler": "custom:refurb-project-handler",
+          "actionFunction": "createRefurbProject"
+        }
+      ]
+    }
+  }
 }

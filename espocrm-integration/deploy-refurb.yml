@@ -121,20 +121,26 @@
         - Entities/RefurbProject.php
         - Api/RefurbAuth.php
 
-    - name: Copy button action handler
+    - name: Copy button action handlers
       ansible.builtin.copy:
-        src: "{{ tmp_clone_dir }}/espocrm-integration/client/custom/src/refurb-handler.js"
-        dest: "{{ espocrm_root }}/client/custom/src/refurb-handler.js"
+        src: "{{ tmp_clone_dir }}/espocrm-integration/client/custom/src/{{ item }}"
+        dest: "{{ espocrm_root }}/client/custom/src/{{ item }}"
         owner: "{{ espocrm_user }}"
         group: "{{ espocrm_group }}"
         mode: "0644"
         remote_src: true
+      loop:
+        - refurb-handler.js
+        - refurb-project-handler.js
 
-    - name: Replace placeholder URL in button handler
+    - name: Replace placeholder URL in button handlers
       ansible.builtin.replace:
-        path: "{{ espocrm_root }}/client/custom/src/refurb-handler.js"
+        path: "{{ espocrm_root }}/client/custom/src/{{ item }}"
         regexp: "\\{\\{REFURB_APP_URL\\}\\}"
         replace: "{{ refurb_app_url }}"
+      loop:
+        - refurb-handler.js
+        - refurb-project-handler.js
 
     - name: Remove old button handler files if present
       ansible.builtin.file:

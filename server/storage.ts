@@ -78,9 +78,18 @@ function mapProjectToEspo(project: Partial<InsertRefurbProject>): Record<string,
     }
   }
   if (project.lineItems !== undefined) mapped.lineItems = JSON.stringify(project.lineItems);
-  if (project.subtotal !== undefined) mapped.subtotal = parseFloat(project.subtotal) || 0;
-  if (project.vatTotal !== undefined) mapped.vatTotal = parseFloat(project.vatTotal) || 0;
-  if (project.grandTotal !== undefined) mapped.grandTotal = parseFloat(project.grandTotal) || 0;
+  if (project.subtotal !== undefined) {
+    mapped.subtotal = parseFloat(project.subtotal) || 0;
+    if (project.currency !== undefined) mapped.subtotalCurrency = project.currency;
+  }
+  if (project.vatTotal !== undefined) {
+    mapped.vatTotal = parseFloat(project.vatTotal) || 0;
+    if (project.currency !== undefined) mapped.vatTotalCurrency = project.currency;
+  }
+  if (project.grandTotal !== undefined) {
+    mapped.grandTotal = parseFloat(project.grandTotal) || 0;
+    if (project.currency !== undefined) mapped.grandTotalCurrency = project.currency;
+  }
   if (project.currency !== undefined) mapped.currency = project.currency;
   if (project.notes !== undefined) mapped.notes = project.notes || null;
   return mapped;
