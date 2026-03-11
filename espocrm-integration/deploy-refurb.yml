@@ -43,7 +43,7 @@
         - custom/Espo/Custom/Api
         - client/custom/src
 
-    - name: Copy RefurbProject entity definition files
+    - name: Copy RefurbProject-owned files (safe to overwrite)
       ansible.builtin.copy:
         src: "{{ tmp_clone_dir }}/espocrm-integration/custom/Espo/Custom/Resources/{{ item }}"
         dest: "{{ espocrm_root }}/custom/Espo/Custom/Resources/{{ item }}"
@@ -53,20 +53,60 @@
         remote_src: true
       loop:
         - metadata/entityDefs/RefurbProject.json
-        - metadata/entityDefs/Lead.json
-        - metadata/entityDefs/Opportunity.json
         - metadata/scopes/RefurbProject.json
         - metadata/clientDefs/RefurbProject.json
-        - metadata/clientDefs/Lead.json
-        - metadata/clientDefs/Opportunity.json
-        - metadata/clientDefs/Global.json
         - layouts/RefurbProject/list.json
         - layouts/RefurbProject/listSmall.json
         - layouts/RefurbProject/detail.json
         - i18n/en_US/RefurbProject.json
+
+    - name: Merge into shared entity files (preserves existing config)
+      ansible.builtin.command:
+        cmd: >
+          python3 {{ tmp_clone_dir }}/espocrm-integration/scripts/merge-json.py
+          {{ espocrm_root }}/custom/Espo/Custom/Resources/{{ item }}
+          {{ tmp_clone_dir }}/espocrm-integration/custom/Espo/Custom/Resources/{{ item }}
+      loop:
+        - metadata/entityDefs/Lead.json
+        - metadata/entityDefs/Opportunity.json
+        - metadata/clientDefs/Lead.json
+        - metadata/clientDefs/Opportunity.json
+        - metadata/clientDefs/Global.json
         - i18n/en_US/Lead.json
         - i18n/en_US/Opportunity.json
         - i18n/en_US/Global.json
+      changed_when: true
+
+    - name: Set ownership on merged files
+      ansible.builtin.file:
+        path: "{{ espocrm_root }}/custom/Espo/Custom/Resources/{{ item }}"
+        owner: "{{ espocrm_user }}"
+        group: "{{ espocrm_group }}"
+        mode: "0644"
+      loop:
+        - metadata/entityDefs/Lead.json
+        - metadata/entityDefs/Opportunity.json
+        - metadata/clientDefs/Lead.json
+        - metadata/clientDefs/Opportunity.json
+        - metadata/clientDefs/Global.json
+        - i18n/en_US/Lead.json
+        - i18n/en_US/Opportunity.json
+        - i18n/en_US/Global.json
+
+    - name: Merge custom routes into existing routes.json
+      ansible.builtin.command:
+        cmd: >
+          python3 {{ tmp_clone_dir }}/espocrm-integration/scripts/merge-routes.py
+          {{ espocrm_root }}/custom/Espo/Custom/Resources/routes.json
+          {{ tmp_clone_dir }}/espocrm-integration/custom/Espo/Custom/Resources/routes.json
+      changed_when: true
+
+    - name: Set ownership on routes.json
+      ansible.builtin.file:
+        path: "{{ espocrm_root }}/custom/Espo/Custom/Resources/routes.json"
+        owner: "{{ espocrm_user }}"
+        group: "{{ espocrm_group }}"
+        mode: "0644"
 
     - name: Copy RefurbProject PHP classes
       ansible.builtin.copy:
@@ -80,15 +120,6 @@
         - Controllers/RefurbProject.php
         - Entities/RefurbProject.php
         - Api/RefurbAuth.php
-
-    - name: Copy custom routes definition
-      ansible.builtin.copy:
-        src: "{{ tmp_clone_dir }}/espocrm-integration/custom/Espo/Custom/Resources/routes.json"
-        dest: "{{ espocrm_root }}/custom/Espo/Custom/Resources/routes.json"
-        owner: "{{ espocrm_user }}"
-        group: "{{ espocrm_group }}"
-        mode: "0644"
-        remote_src: true
 
     - name: Copy button action handler
       ansible.builtin.copy:

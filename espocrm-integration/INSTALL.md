@@ -57,19 +57,30 @@ cp -r client/ /path/to/espocrm/
 
 This installs:
 
-**Custom Entity (RefurbProject):**
+**RefurbProject entity (safe to overwrite):**
 - `custom/Espo/Custom/Controllers/RefurbProject.php` - API controller (required for REST API access)
 - `custom/Espo/Custom/Entities/RefurbProject.php` - Entity class
-- `custom/Espo/Custom/Resources/metadata/entityDefs/RefurbProject.json` - Field definitions
+- `custom/Espo/Custom/Api/RefurbAuth.php` - Auth secret endpoint
+- `custom/Espo/Custom/Resources/metadata/entityDefs/RefurbProject.json` - Field and link definitions
 - `custom/Espo/Custom/Resources/metadata/scopes/RefurbProject.json` - Entity scope config
 - `custom/Espo/Custom/Resources/metadata/clientDefs/RefurbProject.json` - Frontend config
-- `custom/Espo/Custom/Resources/metadata/layouts/RefurbProject/list.json` - List layout
+- `custom/Espo/Custom/Resources/metadata/layouts/RefurbProject/list.json` - Full list layout
+- `custom/Espo/Custom/Resources/metadata/layouts/RefurbProject/listSmall.json` - Compact list for bottom panels
 - `custom/Espo/Custom/Resources/metadata/layouts/RefurbProject/detail.json` - Detail layout
-- `custom/Espo/Custom/Resources/i18n/en_US/RefurbProject.json` - Field translations
-- `custom/Espo/Custom/Resources/i18n/en_US/Global.json` - Scope name translations
+- `custom/Espo/Custom/Resources/i18n/en_US/RefurbProject.json` - Field and link translations
 
-**Button Configuration:**
-- `custom/Espo/Custom/Resources/metadata/clientDefs/Global.json` - Button metadata (added globally, visible only on Opportunity and Lead)
+**Shared files (must be MERGED, not overwritten):**
+- `custom/Espo/Custom/Resources/metadata/entityDefs/Lead.json` - Adds hasMany refurbProjects link
+- `custom/Espo/Custom/Resources/metadata/entityDefs/Opportunity.json` - Adds hasMany refurbProjects link
+- `custom/Espo/Custom/Resources/metadata/clientDefs/Lead.json` - Adds Refurb Projects bottom panel
+- `custom/Espo/Custom/Resources/metadata/clientDefs/Opportunity.json` - Adds Refurb Projects bottom panel
+- `custom/Espo/Custom/Resources/metadata/clientDefs/Global.json` - Adds button to detail views
+- `custom/Espo/Custom/Resources/i18n/en_US/Lead.json` - Adds refurbProjects link label
+- `custom/Espo/Custom/Resources/i18n/en_US/Opportunity.json` - Adds refurbProjects link label
+- `custom/Espo/Custom/Resources/i18n/en_US/Global.json` - Scope name translations
+- `custom/Espo/Custom/Resources/routes.json` - Adds RefurbAuth API route
+
+**Button handler:**
 - `client/custom/src/refurb-handler.js` - Button action handler with visibility check
 
 ### Step 3: Clear Cache & Rebuild
@@ -129,11 +140,21 @@ The app accepts these URL parameters:
 
 Auth credentials are passed via the URL hash fragment (not logged or sent to servers) and cleared from the URL immediately after the app reads them.
 
-## Merging with Existing Global.json
+## Merging with Existing Files
 
-If you already have custom `i18n/en_US/Global.json` or `clientDefs/Global.json` files, merge the entries rather than replacing the files:
-- For `i18n/en_US/Global.json`: merge the `scopeNames` and `scopeNamesPlural` entries
-- For `clientDefs/Global.json`: merge the `menu.detail.buttons` array entries
+Several files in this integration may already exist in your EspoCRM instance with other customisations. **These must be merged, not overwritten:**
+
+- `metadata/entityDefs/Lead.json` — merge the `links` object
+- `metadata/entityDefs/Opportunity.json` — merge the `links` object
+- `metadata/clientDefs/Lead.json` — merge the `bottomPanels` object
+- `metadata/clientDefs/Opportunity.json` — merge the `bottomPanels` object
+- `metadata/clientDefs/Global.json` — merge the `menu.detail.buttons` array
+- `i18n/en_US/Lead.json` — merge the `links` object
+- `i18n/en_US/Opportunity.json` — merge the `links` object
+- `i18n/en_US/Global.json` — merge the `scopeNames` and `scopeNamesPlural` objects
+- `Resources/routes.json` — append new route entries to the existing array
+
+The Ansible playbook handles this automatically using the merge scripts in `scripts/`. If installing manually, deep-merge these files rather than replacing them.
 
 ## RefurbProject Entity Fields
 
