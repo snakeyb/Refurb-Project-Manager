@@ -4,6 +4,17 @@
   "color": "#6A8DCC",
   "kanbanViewMode": false,
   "createDisabled": true,
+  "fieldDefs": {
+    "subtotal": {
+      "readOnly": true
+    },
+    "vatTotal": {
+      "readOnly": true
+    },
+    "grandTotal": {
+      "readOnly": true
+    }
+  },
   "menu": {
     "detail": {
       "buttons": [
