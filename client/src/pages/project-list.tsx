@@ -1,17 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Plus, Search, Building2, ExternalLink, Hammer } from "lucide-react";
+import { Plus, Search, Building2, ExternalLink, Hammer, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/status-badge";
 import { EspoHeader } from "@/components/espo-header";
+import { DuplicateDialog } from "@/components/duplicate-dialog";
 import type { RefurbProject } from "@shared/schema";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useState } from "react";
 
 export default function ProjectList() {
   const [search, setSearch] = useState("");
+  const [duplicateProject, setDuplicateProject] = useState<RefurbProject | null>(null);
 
   const { data: projects, isLoading, error } = useQuery<RefurbProject[]>({
     queryKey: ["/api/refurb-projects"],
@@ -86,14 +88,14 @@ export default function ProjectList() {
                     <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
                     <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Total</th>
                     <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Created</th>
-                    <th className="w-10"></th>
+                    <th className="w-20"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((project) => (
                     <tr
                       key={project.id}
-                      className="border-b last:border-b-0 hover-elevate active-elevate-2 cursor-pointer"
+                      className="border-b last:border-b-0 hover:bg-muted/30 transition-colors"
                       data-testid={`row-project-${project.id}`}
                     >
                       <td className="py-3 px-4">
@@ -141,11 +143,23 @@ export default function ProjectList() {
                         </Link>
                       </td>
                       <td className="py-3 px-2">
-                        <Link href={`/projects/${project.id}`}>
-                          <Button size="icon" variant="ghost" className="h-7 w-7" data-testid={`button-view-${project.id}`}>
-                            <ExternalLink className="h-3.5 w-3.5" />
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7"
+                            onClick={(e) => { e.stopPropagation(); setDuplicateProject(project); }}
+                            title="Duplicate project"
+                            data-testid={`button-duplicate-${project.id}`}
+                          >
+                            <Copy className="h-3.5 w-3.5" />
                           </Button>
-                        </Link>
+                          <Link href={`/projects/${project.id}`}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" data-testid={`button-view-${project.id}`}>
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </Button>
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -155,20 +169,33 @@ export default function ProjectList() {
 
             <div className="sm:hidden space-y-2" data-testid="project-list-cards">
               {filtered.map((project) => (
-                <Link key={project.id} href={`/projects/${project.id}`}>
-                  <div
-                    className="border rounded-md bg-card p-3 active:bg-muted/30 transition-colors"
-                    data-testid={`card-project-${project.id}`}
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-1.5">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Hammer className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                        <span className="text-sm font-medium text-primary truncate" data-testid={`text-project-name-${project.id}`}>
-                          {project.name}
-                        </span>
-                      </div>
+                <div
+                  key={project.id}
+                  className="border rounded-md bg-card p-3"
+                  data-testid={`card-project-${project.id}`}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                    <Link href={`/projects/${project.id}`} className="flex items-center gap-2 min-w-0 flex-1">
+                      <Hammer className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      <span className="text-sm font-medium text-primary truncate" data-testid={`text-project-name-${project.id}`}>
+                        {project.name}
+                      </span>
+                    </Link>
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <StatusBadge status={project.status} />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-6 w-6"
+                        onClick={() => setDuplicateProject(project)}
+                        title="Duplicate"
+                        data-testid={`button-duplicate-card-${project.id}`}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
                     </div>
+                  </div>
+                  <Link href={`/projects/${project.id}`}>
                     <div className="flex items-center justify-between gap-2">
                       {project.associatedEntityName ? (
                         <span className="text-xs text-muted-foreground truncate">
@@ -181,8 +208,8 @@ export default function ProjectList() {
                         {formatCurrency(project.grandTotal, project.currency)}
                       </span>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               ))}
             </div>
           </>
@@ -204,6 +231,14 @@ export default function ProjectList() {
           </div>
         )}
       </div>
+
+      {duplicateProject && (
+        <DuplicateDialog
+          project={duplicateProject}
+          open={!!duplicateProject}
+          onOpenChange={(open) => { if (!open) setDuplicateProject(null); }}
+        />
+      )}
     </div>
   );
 }

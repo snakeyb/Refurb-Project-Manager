@@ -1,11 +1,18 @@
 import type { InsertRefurbProject, RefurbProject, RefurbLineItem } from "@shared/schema";
 
+export interface EntityResult {
+  id: string;
+  name: string;
+  type: "Lead" | "Opportunity";
+}
+
 export interface IStorage {
   getRefurbProjects(): Promise<RefurbProject[]>;
   getRefurbProject(id: string): Promise<RefurbProject | undefined>;
   createRefurbProject(project: InsertRefurbProject): Promise<RefurbProject>;
   updateRefurbProject(id: string, project: Partial<InsertRefurbProject>): Promise<RefurbProject | undefined>;
   deleteRefurbProject(id: string): Promise<boolean>;
+  searchEntities(q: string, type: string): Promise<EntityResult[]>;
 }
 
 function parseLineItems(raw: unknown): RefurbLineItem[] {
@@ -197,5 +204,30 @@ export class EspoCRMStorage implements IStorage {
       if (err instanceof Error && err.message.includes("404")) return false;
       throw err;
     }
+  }
+
+  async searchEntities(q: string, type: string): Promise<EntityResult[]> {
+    const params = new URLSearchParams({ maxSize: "10", orderBy: "name", order: "asc" });
+    if (q) params.set("textFilter", q);
+
+    const fetchType = async (entityType: "Lead" | "Opportunity"): Promise<EntityResult[]> => {
+      try {
+        const result = await this.request("GET", `/${entityType}?${params}`) as {
+          list: Array<{ id: string; name?: string; [k: string]: unknown }>;
+        };
+        return (result.list || []).map((r) => ({
+          id: String(r.id),
+          name: String(r.name || r.id),
+          type: entityType,
+        }));
+      } catch {
+        return [];
+      }
+    };
+
+    if (type === "Lead") return fetchType("Lead");
+    if (type === "Opportunity") return fetchType("Opportunity");
+    const [leads, opps] = await Promise.all([fetchType("Lead"), fetchType("Opportunity")]);
+    return [...leads, ...opps].sort((a, b) => a.name.localeCompare(b.name));
   }
 }

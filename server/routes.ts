@@ -124,6 +124,21 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/search-entities", async (req, res) => {
+    const storage = requireEspo(req, res);
+    if (!storage) return;
+    const q = String(req.query.q || "").trim();
+    const type = String(req.query.type || "all");
+    try {
+      const results = await storage.searchEntities(q, type);
+      res.json(results);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Failed to search entities";
+      const status = extractEspoStatus(msg);
+      res.status(status).json({ message: msg });
+    }
+  });
+
   app.delete("/api/refurb-projects/:id", async (req, res) => {
     const storage = requireEspo(req, res);
     if (!storage) return;

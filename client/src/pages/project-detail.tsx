@@ -7,10 +7,12 @@ import { EspoHeader } from "@/components/espo-header";
 import { EspoPanel } from "@/components/espo-panel";
 import { LineItemTable } from "@/components/line-item-table";
 import { StatusBadge } from "@/components/status-badge";
+import { DuplicateDialog } from "@/components/duplicate-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { RefurbProject, RefurbLineItem } from "@shared/schema";
 import { formatCurrency, formatDateTime } from "@/lib/format";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +29,7 @@ export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const [duplicateOpen, setDuplicateOpen] = useState(false);
 
   const { data: project, isLoading, error } = useQuery<RefurbProject>({
     queryKey: ["/api/refurb-projects", id],
@@ -43,27 +46,6 @@ export default function ProjectDetail() {
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to delete the project.", variant: "destructive" });
-    },
-  });
-
-  const duplicateMutation = useMutation({
-    mutationFn: async () => {
-      if (!project) throw new Error("No project to duplicate");
-      const { id: _, createdAt, updatedAt, ...rest } = project;
-      const res = await apiRequest("POST", "/api/refurb-projects", {
-        ...rest,
-        name: `${project.name} (Copy)`,
-        status: "Draft",
-      });
-      return res.json();
-    },
-    onSuccess: (data: RefurbProject) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/refurb-projects"] });
-      toast({ title: "Project duplicated", description: "A copy of the project has been created." });
-      navigate(`/projects/${data.id}`);
-    },
-    onError: () => {
-      toast({ title: "Error", description: "Failed to duplicate the project.", variant: "destructive" });
     },
   });
 
@@ -120,7 +102,7 @@ export default function ProjectDetail() {
               <Edit className="h-3.5 w-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">Edit</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={() => duplicateMutation.mutate()} disabled={duplicateMutation.isPending} data-testid="button-duplicate">
+            <Button variant="outline" size="sm" onClick={() => setDuplicateOpen(true)} data-testid="button-duplicate">
               <Copy className="h-3.5 w-3.5 sm:mr-1.5" />
               <span className="hidden sm:inline">Duplicate</span>
             </Button>
@@ -213,6 +195,12 @@ export default function ProjectDetail() {
           </div>
         </div>
       </div>
+
+      <DuplicateDialog
+        project={project}
+        open={duplicateOpen}
+        onOpenChange={setDuplicateOpen}
+      />
     </div>
   );
 }
