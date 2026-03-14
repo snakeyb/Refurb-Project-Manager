@@ -48,16 +48,13 @@
       "view": "views/fields/text"
     },
     "subtotal": {
-      "type": "currency",
-      "readOnly": true
+      "type": "currency"
     },
     "vatTotal": {
-      "type": "currency",
-      "readOnly": true
+      "type": "currency"
     },
     "grandTotal": {
-      "type": "currency",
-      "readOnly": true
+      "type": "currency"
     },
     "notes": {
       "type": "text"

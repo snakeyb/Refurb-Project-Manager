@@ -58,6 +58,7 @@
         - layouts/RefurbProject/list.json
         - layouts/RefurbProject/listSmall.json
         - layouts/RefurbProject/detail.json
+        - layouts/RefurbProject/edit.json
         - i18n/en_US/RefurbProject.json
 
     - name: Merge into shared entity files (preserves existing config)

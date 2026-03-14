@@ -1,0 +1,30 @@
+[
+  {
+    "label": "Overview",
+    "rows": [
+      [
+        { "name": "name" },
+        { "name": "status" }
+      ],
+      [
+        { "name": "lead" },
+        { "name": "opportunity" }
+      ],
+      [
+        { "name": "currency" },
+        false
+      ],
+      [
+        { "name": "description", "fullWidth": true }
+      ]
+    ]
+  },
+  {
+    "label": "Notes",
+    "rows": [
+      [
+        { "name": "notes", "fullWidth": true }
+      ]
+    ]
+  }
+]
