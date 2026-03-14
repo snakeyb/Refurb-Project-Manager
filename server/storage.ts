@@ -78,17 +78,18 @@ function mapProjectToEspo(project: Partial<InsertRefurbProject>): Record<string,
     }
   }
   if (project.lineItems !== undefined) mapped.lineItems = JSON.stringify(project.lineItems);
+  const currencyCode = project.currency || "GBP";
   if (project.subtotal !== undefined) {
     mapped.subtotal = parseFloat(project.subtotal) || 0;
-    if (project.currency !== undefined) mapped.subtotalCurrency = project.currency;
+    mapped.subtotalCurrency = currencyCode;
   }
   if (project.vatTotal !== undefined) {
     mapped.vatTotal = parseFloat(project.vatTotal) || 0;
-    if (project.currency !== undefined) mapped.vatTotalCurrency = project.currency;
+    mapped.vatTotalCurrency = currencyCode;
   }
   if (project.grandTotal !== undefined) {
     mapped.grandTotal = parseFloat(project.grandTotal) || 0;
-    if (project.currency !== undefined) mapped.grandTotalCurrency = project.currency;
+    mapped.grandTotalCurrency = currencyCode;
   }
   if (project.currency !== undefined) mapped.currency = project.currency;
   if (project.notes !== undefined) mapped.notes = project.notes || null;
@@ -179,7 +180,8 @@ export class EspoCRMStorage implements IStorage {
   async updateRefurbProject(id: string, project: Partial<InsertRefurbProject>): Promise<RefurbProject | undefined> {
     try {
       const data = mapProjectToEspo(project);
-      const record = await this.request("PUT", `/RefurbProject/${id}`, data) as Record<string, unknown>;
+      await this.request("PUT", `/RefurbProject/${id}`, data);
+      const record = await this.request("GET", `/RefurbProject/${id}`) as Record<string, unknown>;
       return mapEspoToProject(record);
     } catch (err: unknown) {
       if (err instanceof Error && err.message.includes("404")) return undefined;

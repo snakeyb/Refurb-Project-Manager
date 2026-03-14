@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { type Server } from "http";
 import { EspoCRMStorage } from "./storage";
 import { insertRefurbProjectSchema } from "@shared/schema";
+import type { RefurbLineItem } from "@shared/schema";
 
 function getEspoStorage(req: Request): EspoCRMStorage | null {
   const espoUrl = req.headers["x-espo-url"] as string;
@@ -27,6 +28,26 @@ function extractEspoStatus(msg: string): number {
     if (code >= 400 && code < 600) return code;
   }
   return 500;
+}
+
+function recalculateTotals(data: Record<string, unknown>): void {
+  const lineItems = data.lineItems;
+  if (!Array.isArray(lineItems)) return;
+  let subtotal = 0;
+  let vatTotal = 0;
+  for (const item of lineItems as RefurbLineItem[]) {
+    const qty = Number(item.quantity) || 0;
+    const cost = Number(item.unitCost) || 0;
+    const vatRate = Number(item.vatRate) || 0;
+    item.lineTotal = Math.round(qty * cost * 100) / 100;
+    item.vatAmount = Math.round(item.lineTotal * (vatRate / 100) * 100) / 100;
+    item.lineTotalIncVat = Math.round((item.lineTotal + item.vatAmount) * 100) / 100;
+    subtotal += item.lineTotal;
+    vatTotal += item.vatAmount;
+  }
+  data.subtotal = String(Math.round(subtotal * 100) / 100);
+  data.vatTotal = String(Math.round(vatTotal * 100) / 100);
+  data.grandTotal = String(Math.round((subtotal + vatTotal) * 100) / 100);
 }
 
 export async function registerRoutes(
@@ -70,7 +91,9 @@ export async function registerRoutes(
       if (!parsed.success) {
         return res.status(400).json({ message: "Invalid data", errors: parsed.error.flatten() });
       }
-      const project = await storage.createRefurbProject(parsed.data);
+      const data = { ...parsed.data } as Record<string, unknown>;
+      recalculateTotals(data);
+      const project = await storage.createRefurbProject(data as typeof parsed.data);
       res.status(201).json(project);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Failed to create refurb project";
@@ -87,25 +110,9 @@ export async function registerRoutes(
       if (!parsed.success) {
         return res.status(400).json({ message: "Invalid data", errors: parsed.error.flatten() });
       }
-      const data = { ...parsed.data };
-      if (data.lineItems && Array.isArray(data.lineItems)) {
-        let subtotal = 0;
-        let vatTotal = 0;
-        for (const item of data.lineItems) {
-          const qty = Number(item.quantity) || 0;
-          const cost = Number(item.unitCost) || 0;
-          const vatRate = Number(item.vatRate) || 0;
-          item.lineTotal = Math.round(qty * cost * 100) / 100;
-          item.vatAmount = Math.round(item.lineTotal * (vatRate / 100) * 100) / 100;
-          item.lineTotalIncVat = Math.round((item.lineTotal + item.vatAmount) * 100) / 100;
-          subtotal += item.lineTotal;
-          vatTotal += item.vatAmount;
-        }
-        data.subtotal = String(Math.round(subtotal * 100) / 100);
-        data.vatTotal = String(Math.round(vatTotal * 100) / 100);
-        data.grandTotal = String(Math.round((subtotal + vatTotal) * 100) / 100);
-      }
-      const project = await storage.updateRefurbProject(req.params.id, data);
+      const data = { ...parsed.data } as Record<string, unknown>;
+      recalculateTotals(data);
+      const project = await storage.updateRefurbProject(req.params.id, data as Partial<typeof parsed.data>);
       if (!project) {
         return res.status(404).json({ message: "Refurb project not found" });
       }
