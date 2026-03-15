@@ -56,7 +56,7 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [search]);
 
-  const { data: results, isFetching } = useQuery<EntityResult[]>({
+  const { data: results, isFetching, isError } = useQuery<EntityResult[]>({
     queryKey: ["/api/search-entities", entityTab, debouncedSearch],
     queryFn: async () => {
       const params = new URLSearchParams({ type: entityTab, q: debouncedSearch });
@@ -65,6 +65,7 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
     },
     enabled: open,
     staleTime: 30_000,
+    retry: false,
   });
 
   const duplicateMutation = useMutation({
@@ -155,12 +156,17 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
             </div>
 
             <div className="mt-1 border rounded-md max-h-44 overflow-y-auto bg-card" data-testid="entity-results">
-              {selectedEntity === null && !search && (
+              {isError && (
+                <div className="px-3 py-2 text-xs text-destructive">
+                  Could not search {entityLabel}s — check your CRM connection.
+                </div>
+              )}
+              {!isError && selectedEntity === null && !search && (
                 <div className="px-3 py-2 text-xs text-muted-foreground italic">
                   Keep current association, or search to select a different {entityLabel.toLowerCase()}.
                 </div>
               )}
-              {results && results.length === 0 && (search || debouncedSearch) && (
+              {!isError && results && results.length === 0 && (search || debouncedSearch) && (
                 <div className="px-3 py-2 text-xs text-muted-foreground">No {entityLabel}s found.</div>
               )}
               {results?.map((entity) => (

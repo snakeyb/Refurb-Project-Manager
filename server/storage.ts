@@ -207,27 +207,28 @@ export class EspoCRMStorage implements IStorage {
   }
 
   async searchEntities(q: string, type: string): Promise<EntityResult[]> {
-    const params = new URLSearchParams({ maxSize: "10", orderBy: "name", order: "asc" });
-    if (q) params.set("textFilter", q);
+    const qs = `maxSize=20&select=id,name${q ? `&textFilter=${encodeURIComponent(q)}` : ""}`;
 
     const fetchType = async (entityType: "Lead" | "Opportunity"): Promise<EntityResult[]> => {
-      try {
-        const result = await this.request("GET", `/${entityType}?${params}`) as {
-          list: Array<{ id: string; name?: string; [k: string]: unknown }>;
-        };
-        return (result.list || []).map((r) => ({
-          id: String(r.id),
-          name: String(r.name || r.id),
-          type: entityType,
-        }));
-      } catch {
-        return [];
-      }
+      const result = await this.request("GET", `/${entityType}?${qs}`) as {
+        list: Array<{ id: string; name?: string; firstName?: string; lastName?: string; [k: string]: unknown }>;
+      };
+      return (result.list || []).map((r) => {
+        const name = String(
+          r.name ||
+          [r.firstName, r.lastName].filter(Boolean).join(" ") ||
+          r.id
+        );
+        return { id: String(r.id), name, type: entityType };
+      });
     };
 
     if (type === "Lead") return fetchType("Lead");
     if (type === "Opportunity") return fetchType("Opportunity");
-    const [leads, opps] = await Promise.all([fetchType("Lead"), fetchType("Opportunity")]);
+    const [leads, opps] = await Promise.all([
+      fetchType("Lead").catch(() => [] as EntityResult[]),
+      fetchType("Opportunity").catch(() => [] as EntityResult[]),
+    ]);
     return [...leads, ...opps].sort((a, b) => a.name.localeCompare(b.name));
   }
 }
