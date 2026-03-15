@@ -164,7 +164,7 @@ export default function ProjectForm() {
             <EspoPanel title="Project Details" icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <label className="text-xs font-medium text-muted-foreground">
                     Project Name <span className="text-destructive">*</span>
                   </label>
                   <Input
@@ -177,7 +177,7 @@ export default function ProjectForm() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</label>
+                  <label className="text-xs font-medium text-muted-foreground">Status</label>
                   <Select value={status} onValueChange={setStatus}>
                     <SelectTrigger className="mt-1" data-testid="select-status">
                       <SelectValue />
@@ -190,7 +190,7 @@ export default function ProjectForm() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Currency</label>
+                  <label className="text-xs font-medium text-muted-foreground">Currency</label>
                   <Select value={currency} onValueChange={setCurrency}>
                     <SelectTrigger className="mt-1" data-testid="select-currency">
                       <SelectValue />
@@ -203,7 +203,7 @@ export default function ProjectForm() {
                   </Select>
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Description</label>
+                  <label className="text-xs font-medium text-muted-foreground">Description</label>
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -222,10 +222,10 @@ export default function ProjectForm() {
           </div>
 
           <div className="space-y-4">
-            <EspoPanel title="Associated Entity" icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}>
+            <EspoPanel title="Associated Record" icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Entity Type</label>
+                  <label className="text-xs font-medium text-muted-foreground">Record Type</label>
                   <Select value={associatedEntityType} onValueChange={setAssociatedEntityType}>
                     <SelectTrigger className="mt-1" data-testid="select-entity-type">
                       <SelectValue placeholder="Select type..." />
@@ -241,7 +241,7 @@ export default function ProjectForm() {
                 {associatedEntityType && associatedEntityType !== "none" && (
                   <>
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <label className="text-xs font-medium text-muted-foreground">
                         {associatedEntityType} Name
                       </label>
                       <Input
@@ -253,13 +253,13 @@ export default function ProjectForm() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        EspoCRM Entity ID
+                      <label className="text-xs font-medium text-muted-foreground">
+                        PropertyPipeline Record ID
                       </label>
                       <Input
                         value={associatedEntityId}
                         onChange={(e) => setAssociatedEntityId(e.target.value)}
-                        placeholder="Optional - EspoCRM record ID"
+                        placeholder="Optional - PropertyPipeline record ID"
                         className="mt-1"
                         data-testid="input-entity-id"
                       />

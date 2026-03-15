@@ -83,11 +83,11 @@ export default function ProjectList() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-white dark:bg-card">
-                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Project Name</th>
-                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Associated Entity</th>
-                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                    <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Total</th>
-                    <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Created</th>
+                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs">Project Name</th>
+                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs hidden md:table-cell">Associated Record</th>
+                    <th className="text-left py-2.5 px-4 font-medium text-muted-foreground text-xs">Status</th>
+                    <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs">Total</th>
+                    <th className="text-right py-2.5 px-4 font-medium text-muted-foreground text-xs hidden lg:table-cell">Created</th>
                     <th className="w-20"></th>
                   </tr>
                 </thead>

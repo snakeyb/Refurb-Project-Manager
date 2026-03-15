@@ -53,14 +53,14 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-white dark:bg-card">
-                <th className="text-left py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">#</th>
-                <th className="text-left py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Description</th>
-                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">Qty</th>
-                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">Unit Cost</th>
-                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">VAT %</th>
-                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">Net</th>
-                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">VAT</th>
-                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">Total</th>
+                <th className="text-left py-2.5 px-3 font-medium text-muted-foreground text-xs">#</th>
+                <th className="text-left py-2.5 px-3 font-medium text-muted-foreground text-xs">Description</th>
+                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs w-20">Qty</th>
+                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs w-28">Unit Cost</th>
+                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs w-20">VAT %</th>
+                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs w-28">Net</th>
+                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs w-28">VAT</th>
+                <th className="text-right py-2.5 px-3 font-medium text-muted-foreground text-xs w-28">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -134,13 +134,13 @@ export function LineItemTable({ items, onChange, readOnly = false, currency = "G
           <thead>
             <tr className="border-b bg-white dark:bg-card">
               <th className="w-8"></th>
-              <th className="text-left py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider">Description</th>
-              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">Qty</th>
-              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">Unit Cost</th>
-              <th className="text-center py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider w-32">VAT Rate</th>
-              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider w-24">Net</th>
-              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider w-24">VAT</th>
-              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">Total</th>
+              <th className="text-left py-2.5 px-2 font-medium text-muted-foreground text-xs">Description</th>
+              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs w-20">Qty</th>
+              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs w-28">Unit Cost</th>
+              <th className="text-center py-2.5 px-2 font-medium text-muted-foreground text-xs w-32">VAT Rate</th>
+              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs w-24">Net</th>
+              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs w-24">VAT</th>
+              <th className="text-right py-2.5 px-2 font-medium text-muted-foreground text-xs w-28">Total</th>
               <th className="w-10"></th>
             </tr>
           </thead>

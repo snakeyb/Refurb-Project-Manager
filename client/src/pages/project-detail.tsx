@@ -166,12 +166,12 @@ export default function ProjectDetail() {
 
           <div className="space-y-4">
             {project.associatedEntityName && (
-              <EspoPanel title="Associated Entity" icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}>
+              <EspoPanel title="Associated Record" icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}>
                 <div className="space-y-3">
                   <DetailField label="Type" value={project.associatedEntityType || "-"} />
                   <DetailField label="Name" value={project.associatedEntityName} testId="text-detail-entity-name" />
                   {project.associatedEntityId && (
-                    <DetailField label="Entity ID" value={project.associatedEntityId} />
+                    <DetailField label="Record ID" value={project.associatedEntityId} />
                   )}
                   <p className="text-xs text-muted-foreground mt-2 border-t pt-2">
                     In your PropertyPipeline CRM, this would link directly to the {project.associatedEntityType?.toLowerCase()} record.
@@ -208,7 +208,7 @@ export default function ProjectDetail() {
 function DetailField({ label, value, testId, children }: { label: string; value?: string; testId?: string; children?: React.ReactNode }) {
   return (
     <div>
-      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{label}</span>
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
       <div className="mt-0.5">
         {children || <span className="text-sm" data-testid={testId}>{value || "-"}</span>}
       </div>

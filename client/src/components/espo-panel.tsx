@@ -10,7 +10,7 @@ export function EspoPanel({ title, children, actions }: EspoPanelProps) {
   return (
     <div className="border border-border rounded-sm bg-white shadow-xs" data-testid={`panel-${title.toLowerCase().replace(/\s+/g, "-")}`}>
       <div className="flex items-center justify-between px-4 py-2 border-b border-border">
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <span className="text-xs font-semibold text-muted-foreground">
           {title}
         </span>
         {actions && (

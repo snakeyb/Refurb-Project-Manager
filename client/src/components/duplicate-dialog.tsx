@@ -110,7 +110,7 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
 
         <div className="space-y-4 py-1">
           <div>
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <label className="text-xs font-medium text-muted-foreground">
               New Project Name
             </label>
             <Input
@@ -122,7 +122,7 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <label className="text-xs font-medium text-muted-foreground">
               Associate With
             </label>
             <Tabs
