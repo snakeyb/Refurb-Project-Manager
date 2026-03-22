@@ -158,7 +158,7 @@ export default function ProjectForm() {
         }
       />
 
-      <form onSubmit={handleSubmit} className="p-3 sm:p-5 space-y-4 max-w-6xl">
+      <form onSubmit={handleSubmit} className="p-3 sm:p-5 space-y-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             <EspoPanel title="Project Details" icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>

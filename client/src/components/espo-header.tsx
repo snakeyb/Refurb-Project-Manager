@@ -58,7 +58,7 @@ export function EspoHeader({ breadcrumbs, actions }: EspoHeaderProps) {
             <a href={backToCrmUrl!} target="_self" data-testid="link-back-to-crm">
               <Button variant="outline" size="sm" className="text-xs sm:text-sm">
                 <ExternalLink className="h-3.5 w-3.5 mr-1 sm:mr-1.5" />
-                <span className="hidden sm:inline">Back to CRM</span>
+                <span className="hidden sm:inline">Back to PropertyPipeline</span>
                 <span className="sm:hidden">CRM</span>
               </Button>
             </a>

@@ -96,7 +96,7 @@ export default function ProjectDetail() {
           <>
             <Button variant="outline" size="sm" onClick={() => navigate("/")} data-testid="button-back">
               <ArrowLeft className="h-3.5 w-3.5 sm:mr-1.5" />
-              <span className="hidden sm:inline">Back</span>
+              <span className="hidden sm:inline">Back to Projects</span>
             </Button>
             <Button variant="outline" size="sm" onClick={() => navigate(`/projects/${id}/edit`)} data-testid="button-edit">
               <Edit className="h-3.5 w-3.5 sm:mr-1.5" />
@@ -136,7 +136,7 @@ export default function ProjectDetail() {
         }
       />
 
-      <div className="p-3 sm:p-5 space-y-4 max-w-6xl">
+      <div className="p-3 sm:p-5 space-y-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             <EspoPanel title="Overview" icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>
