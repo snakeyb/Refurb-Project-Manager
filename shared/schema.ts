@@ -32,6 +32,7 @@ export const insertRefurbProjectSchema = z.object({
   grandTotal: z.union([z.string(), z.number().transform(String)]).default("0"),
   currency: z.string().default("GBP"),
   notes: z.string().nullable().optional(),
+  isTemplate: z.boolean().default(false),
 });
 
 export type InsertRefurbProject = z.infer<typeof insertRefurbProjectSchema>;

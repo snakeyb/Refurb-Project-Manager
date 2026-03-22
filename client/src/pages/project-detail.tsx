@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useLocation } from "wouter";
-import { Edit, Trash2, Copy, FileText, Building2, Clock, Tag, StickyNote, ArrowLeft } from "lucide-react";
+import { Edit, Trash2, Copy, FileText, Building2, Clock, Tag, StickyNote, ArrowLeft, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EspoHeader } from "@/components/espo-header";
@@ -140,8 +140,15 @@ export default function ProjectDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             <EspoPanel title="Overview" icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>
+              {project.isTemplate && (
+                <div className="flex items-center gap-2 mb-3 pb-3 border-b">
+                  <LayoutTemplate className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Template</span>
+                  <span className="text-xs text-muted-foreground">— duplicate this to create a project</span>
+                </div>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-                <DetailField label="Project Name" value={project.name} testId="text-detail-name" />
+                <DetailField label={project.isTemplate ? "Template Name" : "Project Name"} value={project.name} testId="text-detail-name" />
                 <DetailField label="Status">
                   <StatusBadge status={project.status} />
                 </DetailField>
@@ -165,7 +172,7 @@ export default function ProjectDetail() {
           </div>
 
           <div className="space-y-4">
-            {project.associatedEntityName && (
+            {!project.isTemplate && project.associatedEntityName && (
               <EspoPanel title="Associated Record" icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}>
                 <div className="space-y-3">
                   <DetailField label="Type" value={project.associatedEntityType || "-"} />

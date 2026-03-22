@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Copy, Search, Building2, MapPin, Loader2, Check } from "lucide-react";
+import { Copy, Search, Building2, MapPin, Loader2, Check, LayoutTemplate, Hammer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,12 +33,18 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
+  const sourceIsTemplate = project.isTemplate ?? false;
+
   const [newName, setNewName] = useState(`Copy of ${project.name}`);
+  const [saveAsTemplate, setSaveAsTemplate] = useState(false);
   const [entityTab, setEntityTab] = useState<"Lead" | "Opportunity">("Lead");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedEntity, setSelectedEntity] = useState<EntityResult | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const outputIsTemplate = sourceIsTemplate ? false : saveAsTemplate;
+  const showEntitySearch = !outputIsTemplate;
 
   useEffect(() => {
     if (open) {
@@ -47,6 +53,7 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
       setDebouncedSearch("");
       setSelectedEntity(null);
       setEntityTab("Lead");
+      setSaveAsTemplate(false);
     }
   }, [open, project.name]);
 
@@ -63,7 +70,7 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
       const res = await apiRequest("GET", `/api/search-entities?${params}`);
       return res.json();
     },
-    enabled: open,
+    enabled: open && showEntitySearch,
     staleTime: 30_000,
     retry: false,
   });
@@ -75,21 +82,23 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
         ...rest,
         name: newName.trim() || `Copy of ${project.name}`,
         status: "Draft",
-        associatedEntityType: selectedEntity?.type ?? project.associatedEntityType,
-        associatedEntityId: selectedEntity?.id ?? project.associatedEntityId,
-        associatedEntityName: selectedEntity?.name ?? project.associatedEntityName,
+        isTemplate: outputIsTemplate,
+        associatedEntityType: outputIsTemplate ? null : (selectedEntity?.type ?? project.associatedEntityType),
+        associatedEntityId: outputIsTemplate ? null : (selectedEntity?.id ?? project.associatedEntityId),
+        associatedEntityName: outputIsTemplate ? null : (selectedEntity?.name ?? project.associatedEntityName),
       };
       const res = await apiRequest("POST", "/api/refurb-projects", body);
       return res.json();
     },
     onSuccess: (data: RefurbProject) => {
       queryClient.invalidateQueries({ queryKey: ["/api/refurb-projects"] });
-      toast({ title: "Project duplicated", description: `"${data.name}" has been created.` });
+      const label = outputIsTemplate ? "Template created" : "Project created";
+      toast({ title: label, description: `"${data.name}" has been created.` });
       onOpenChange(false);
       navigate(`/projects/${data.id}`);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to duplicate the project.", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to duplicate. Please try again.", variant: "destructive" });
     },
   });
 
@@ -101,17 +110,19 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Copy className="h-4 w-4" />
-            Duplicate Project
+            {sourceIsTemplate ? "Use Template" : "Duplicate Project"}
           </DialogTitle>
           <DialogDescription>
-            Create a copy of this project and assign it to a Lead or Property.
+            {sourceIsTemplate
+              ? "Create a new project from this template and assign it to a Lead or Property."
+              : "Create a copy of this project, or save it as a reusable template."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-1">
           <div>
             <label className="text-xs font-medium text-muted-foreground">
-              New Project Name
+              {outputIsTemplate ? "Template Name" : "Project Name"}
             </label>
             <Input
               value={newName}
@@ -121,86 +132,124 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
             />
           </div>
 
-          <div>
-            <label className="text-xs font-medium text-muted-foreground">
-              Associate With
-            </label>
-            <Tabs
-              value={entityTab}
-              onValueChange={(v) => {
-                setEntityTab(v as "Lead" | "Opportunity");
-                setSelectedEntity(null);
-                setSearch("");
-                setDebouncedSearch("");
-              }}
-              className="mt-1"
-            >
-              <TabsList className="w-full">
-                <TabsTrigger value="Lead" className="flex-1" data-testid="tab-lead">Lead</TabsTrigger>
-                <TabsTrigger value="Opportunity" className="flex-1" data-testid="tab-property">Property</TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            <div className="relative mt-2">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={`Search ${entityLabel}s...`}
-                className="pl-8 h-9"
-                data-testid="input-entity-search"
-              />
-              {isFetching && (
-                <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 animate-spin text-muted-foreground" />
-              )}
-            </div>
-
-            <div className="mt-1 border rounded-md max-h-44 overflow-y-auto bg-card" data-testid="entity-results">
-              {isError && (
-                <div className="px-3 py-2 text-xs text-destructive">
-                  Could not search {entityLabel}s — check your CRM connection.
-                </div>
-              )}
-              {!isError && selectedEntity === null && !search && (
-                <div className="px-3 py-2 text-xs text-muted-foreground italic">
-                  Keep current association, or search to select a different {entityLabel.toLowerCase()}.
-                </div>
-              )}
-              {!isError && results && results.length === 0 && (search || debouncedSearch) && (
-                <div className="px-3 py-2 text-xs text-muted-foreground">No {entityLabel}s found.</div>
-              )}
-              {results?.map((entity) => (
+          {!sourceIsTemplate && (
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Save As</label>
+              <div className="flex mt-1 rounded-md border border-input overflow-hidden w-fit">
                 <button
-                  key={entity.id}
                   type="button"
-                  onClick={() => setSelectedEntity(selectedEntity?.id === entity.id ? null : entity)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/50 transition-colors border-b last:border-b-0"
-                  data-testid={`entity-result-${entity.id}`}
+                  onClick={() => { setSaveAsTemplate(false); setSelectedEntity(null); }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${
+                    !saveAsTemplate
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-white text-muted-foreground hover:bg-muted/50"
+                  }`}
+                  data-testid="button-save-as-project"
                 >
-                  {entity.type === "Opportunity" ? (
-                    <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                  ) : (
-                    <Building2 className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                  )}
-                  <span className="flex-1 truncate">{entity.name}</span>
-                  {selectedEntity?.id === entity.id && (
-                    <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                  )}
+                  <Hammer className="h-3.5 w-3.5" />
+                  Project
                 </button>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => { setSaveAsTemplate(true); setSelectedEntity(null); }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors border-l border-input ${
+                    saveAsTemplate
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-white text-muted-foreground hover:bg-muted/50"
+                  }`}
+                  data-testid="button-save-as-template"
+                >
+                  <LayoutTemplate className="h-3.5 w-3.5" />
+                  Template
+                </button>
+              </div>
             </div>
+          )}
 
-            {selectedEntity ? (
-              <p className="text-xs text-primary mt-1 flex items-center gap-1">
-                <Check className="h-3 w-3" />
-                Will associate with: <strong>{selectedEntity.name}</strong>
-              </p>
-            ) : (
-              <p className="text-xs text-muted-foreground mt-1">
-                Keeping current association: {project.associatedEntityName || "none"}
-              </p>
-            )}
-          </div>
+          {showEntitySearch && (
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">
+                Associate With
+              </label>
+              <Tabs
+                value={entityTab}
+                onValueChange={(v) => {
+                  setEntityTab(v as "Lead" | "Opportunity");
+                  setSelectedEntity(null);
+                  setSearch("");
+                  setDebouncedSearch("");
+                }}
+                className="mt-1"
+              >
+                <TabsList className="w-full">
+                  <TabsTrigger value="Lead" className="flex-1" data-testid="tab-lead">Lead</TabsTrigger>
+                  <TabsTrigger value="Opportunity" className="flex-1" data-testid="tab-property">Property</TabsTrigger>
+                </TabsList>
+              </Tabs>
+
+              <div className="relative mt-2">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={`Search ${entityLabel}s...`}
+                  className="pl-8 h-9"
+                  data-testid="input-entity-search"
+                />
+                {isFetching && (
+                  <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                )}
+              </div>
+
+              <div className="mt-1 border rounded-md max-h-44 overflow-y-auto bg-card" data-testid="entity-results">
+                {isError && (
+                  <div className="px-3 py-2 text-xs text-destructive">
+                    Could not search {entityLabel}s — check your CRM connection.
+                  </div>
+                )}
+                {!isError && selectedEntity === null && !search && (
+                  <div className="px-3 py-2 text-xs text-muted-foreground italic">
+                    Keep current association, or search to select a different {entityLabel.toLowerCase()}.
+                  </div>
+                )}
+                {!isError && results && results.length === 0 && (search || debouncedSearch) && (
+                  <div className="px-3 py-2 text-xs text-muted-foreground">No {entityLabel}s found.</div>
+                )}
+                {results?.map((entity) => (
+                  <button
+                    key={entity.id}
+                    type="button"
+                    onClick={() => setSelectedEntity(selectedEntity?.id === entity.id ? null : entity)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/50 transition-colors border-b last:border-b-0"
+                    data-testid={`entity-result-${entity.id}`}
+                  >
+                    {entity.type === "Opportunity" ? (
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                    ) : (
+                      <Building2 className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                    )}
+                    <span className="flex-1 truncate">{entity.name}</span>
+                    {selectedEntity?.id === entity.id && (
+                      <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {selectedEntity ? (
+                <p className="text-xs text-primary mt-1 flex items-center gap-1">
+                  <Check className="h-3 w-3" />
+                  Will associate with: <strong>{selectedEntity.name}</strong>
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {sourceIsTemplate
+                    ? "No association selected — you can add one later."
+                    : `Keeping current association: ${project.associatedEntityName || "none"}`}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <DialogFooter>
@@ -214,7 +263,11 @@ export function DuplicateDialog({ project, open, onOpenChange }: Props) {
             data-testid="button-confirm-duplicate"
           >
             {duplicateMutation.isPending ? (
-              <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />Duplicating...</>
+              <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />Creating...</>
+            ) : sourceIsTemplate ? (
+              <><Copy className="h-3.5 w-3.5 mr-1.5" />Create Project</>
+            ) : outputIsTemplate ? (
+              <><LayoutTemplate className="h-3.5 w-3.5 mr-1.5" />Save as Template</>
             ) : (
               <><Copy className="h-3.5 w-3.5 mr-1.5" />Duplicate</>
             )}

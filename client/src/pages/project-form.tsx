@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useParams, useLocation } from "wouter";
-import { Save, X, FileText, Tag, Building2, StickyNote } from "lucide-react";
+import { useParams, useLocation, useSearch } from "wouter";
+import { Save, X, FileText, Tag, Building2, StickyNote, LayoutTemplate, Hammer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,8 +22,11 @@ const ENTITY_TYPES = ["Opportunity", "Lead", "Contact", "Account"];
 export default function ProjectForm() {
   const { id } = useParams<{ id: string }>();
   const [, navigate] = useLocation();
+  const searchStr = useSearch();
   const { toast } = useToast();
   const isEdit = !!id;
+
+  const isTemplateDefault = !isEdit && new URLSearchParams(searchStr).get("template") === "1";
 
   const espoCtx = useMemo(() => getEspoContext(), []);
 
@@ -31,6 +34,7 @@ export default function ProjectForm() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Draft");
   const [currency, setCurrency] = useState("GBP");
+  const [isTemplate, setIsTemplate] = useState(isTemplateDefault);
   const [associatedEntityType, setAssociatedEntityType] = useState(espoCtx.entityType || "");
   const [associatedEntityId, setAssociatedEntityId] = useState(espoCtx.entityId || "");
   const [associatedEntityName, setAssociatedEntityName] = useState(espoCtx.entityName || "");
@@ -56,6 +60,7 @@ export default function ProjectForm() {
       setDescription(project.description || "");
       setStatus(project.status);
       setCurrency(project.currency);
+      setIsTemplate(project.isTemplate ?? false);
       setAssociatedEntityType(project.associatedEntityType || "");
       setAssociatedEntityId(project.associatedEntityId || "");
       setAssociatedEntityName(project.associatedEntityName || "");
@@ -79,9 +84,10 @@ export default function ProjectForm() {
         description: description || null,
         status,
         currency,
-        associatedEntityType: associatedEntityType || null,
-        associatedEntityId: associatedEntityId || null,
-        associatedEntityName: associatedEntityName || null,
+        isTemplate,
+        associatedEntityType: isTemplate ? null : (associatedEntityType || null),
+        associatedEntityId: isTemplate ? null : (associatedEntityId || null),
+        associatedEntityName: isTemplate ? null : (associatedEntityName || null),
         notes: notes || null,
         lineItems,
         subtotal: String(totals.subtotal),
@@ -100,7 +106,7 @@ export default function ProjectForm() {
     onSuccess: (data: RefurbProject) => {
       queryClient.invalidateQueries({ queryKey: ["/api/refurb-projects"] });
       toast({
-        title: isEdit ? "Project updated" : "Project created",
+        title: isEdit ? (isTemplate ? "Template updated" : "Project updated") : (isTemplate ? "Template created" : "Project created"),
         description: `"${name}" has been ${isEdit ? "updated" : "created"} successfully.`,
       });
       navigate(`/projects/${data.id}`);
@@ -108,7 +114,7 @@ export default function ProjectForm() {
     onError: () => {
       toast({
         title: "Error",
-        description: `Failed to ${isEdit ? "update" : "create"} the project.`,
+        description: `Failed to ${isEdit ? "update" : "create"} the ${isTemplate ? "template" : "project"}.`,
         variant: "destructive",
       });
     },
@@ -117,7 +123,7 @@ export default function ProjectForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast({ title: "Validation Error", description: "Project name is required.", variant: "destructive" });
+      toast({ title: "Validation Error", description: "Name is required.", variant: "destructive" });
       return;
     }
     saveMutation.mutate();
@@ -142,7 +148,7 @@ export default function ProjectForm() {
         breadcrumbs={[
           { label: "Refurb Projects", href: "/" },
           ...(isEdit ? [{ label: project?.name || "", href: `/projects/${id}` }] : []),
-          { label: isEdit ? "Edit" : "Create" },
+          { label: isEdit ? "Edit" : (isTemplate ? "Create Template" : "Create") },
         ]}
         actions={
           <>
@@ -161,16 +167,55 @@ export default function ProjectForm() {
       <form onSubmit={handleSubmit} className="p-3 sm:p-5 space-y-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
-            <EspoPanel title="Project Details" icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>
+            <EspoPanel title={isTemplate ? "Template Details" : "Project Details"} icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <label className="text-xs font-medium text-muted-foreground">
-                    Project Name <span className="text-destructive">*</span>
+                    Type
+                  </label>
+                  <div className="flex mt-1 rounded-md border border-input overflow-hidden w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setIsTemplate(false)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${
+                        !isTemplate
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-white text-muted-foreground hover:bg-muted/50"
+                      }`}
+                      data-testid="button-type-project"
+                    >
+                      <Hammer className="h-3.5 w-3.5" />
+                      Project
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsTemplate(true)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors border-l border-input ${
+                        isTemplate
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-white text-muted-foreground hover:bg-muted/50"
+                      }`}
+                      data-testid="button-type-template"
+                    >
+                      <LayoutTemplate className="h-3.5 w-3.5" />
+                      Template
+                    </button>
+                  </div>
+                  {isTemplate && (
+                    <p className="text-xs text-muted-foreground mt-1.5">
+                      Templates can be duplicated to create projects. They cannot be associated with a Lead or Property.
+                    </p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-medium text-muted-foreground">
+                    {isTemplate ? "Template Name" : "Project Name"} <span className="text-destructive">*</span>
                   </label>
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. 14 Victoria Road - Full Refurbishment"
+                    placeholder={isTemplate ? "e.g. Full Bathroom Refurbishment" : "e.g. 14 Victoria Road - Full Refurbishment"}
                     className="mt-1"
                     required
                     data-testid="input-project-name"
@@ -207,7 +252,7 @@ export default function ProjectForm() {
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Brief description of the refurbishment project..."
+                    placeholder={isTemplate ? "Brief description of what this template covers..." : "Brief description of the refurbishment project..."}
                     className="mt-1 resize-none"
                     rows={3}
                     data-testid="input-description"
@@ -222,61 +267,63 @@ export default function ProjectForm() {
           </div>
 
           <div className="space-y-4">
-            <EspoPanel title="Associated Record" icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground">Record Type</label>
-                  <Select value={associatedEntityType} onValueChange={setAssociatedEntityType}>
-                    <SelectTrigger className="mt-1" data-testid="select-entity-type">
-                      <SelectValue placeholder="Select type..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {ENTITY_TYPES.map((t) => (
-                        <SelectItem key={t} value={t}>{t}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+            {!isTemplate && (
+              <EspoPanel title="Associated Record" icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground">Record Type</label>
+                    <Select value={associatedEntityType} onValueChange={setAssociatedEntityType}>
+                      <SelectTrigger className="mt-1" data-testid="select-entity-type">
+                        <SelectValue placeholder="Select type..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {ENTITY_TYPES.map((t) => (
+                          <SelectItem key={t} value={t}>{t}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {associatedEntityType && associatedEntityType !== "none" && (
+                    <>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground">
+                          {associatedEntityType} Name
+                        </label>
+                        <Input
+                          value={associatedEntityName}
+                          onChange={(e) => setAssociatedEntityName(e.target.value)}
+                          placeholder={`e.g. 14 Victoria Road, Manchester`}
+                          className="mt-1"
+                          data-testid="input-entity-name"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground">
+                          PropertyPipeline Record ID
+                        </label>
+                        <Input
+                          value={associatedEntityId}
+                          onChange={(e) => setAssociatedEntityId(e.target.value)}
+                          placeholder="Optional - PropertyPipeline record ID"
+                          className="mt-1"
+                          data-testid="input-entity-id"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          When integrated with your CRM, this links directly to the record.
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
-                {associatedEntityType && associatedEntityType !== "none" && (
-                  <>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground">
-                        {associatedEntityType} Name
-                      </label>
-                      <Input
-                        value={associatedEntityName}
-                        onChange={(e) => setAssociatedEntityName(e.target.value)}
-                        placeholder={`e.g. 14 Victoria Road, Manchester`}
-                        className="mt-1"
-                        data-testid="input-entity-name"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground">
-                        PropertyPipeline Record ID
-                      </label>
-                      <Input
-                        value={associatedEntityId}
-                        onChange={(e) => setAssociatedEntityId(e.target.value)}
-                        placeholder="Optional - PropertyPipeline record ID"
-                        className="mt-1"
-                        data-testid="input-entity-id"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        When integrated with your CRM, this links directly to the entity record.
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </EspoPanel>
+              </EspoPanel>
+            )}
 
             <EspoPanel title="Notes" icon={<StickyNote className="h-3.5 w-3.5 text-muted-foreground" />}>
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Additional notes about this project..."
+                placeholder={isTemplate ? "Additional notes about this template..." : "Additional notes about this project..."}
                 className="resize-none"
                 rows={4}
                 data-testid="input-notes"
@@ -291,7 +338,11 @@ export default function ProjectForm() {
           </Button>
           <Button type="submit" disabled={saveMutation.isPending} data-testid="button-save-bottom">
             <Save className="h-3.5 w-3.5 mr-1.5" />
-            {saveMutation.isPending ? "Saving..." : isEdit ? "Save Changes" : "Create Project"}
+            {saveMutation.isPending
+              ? "Saving..."
+              : isEdit
+                ? "Save Changes"
+                : isTemplate ? "Create Template" : "Create Project"}
           </Button>
         </div>
       </form>

@@ -57,6 +57,7 @@ function mapEspoToProject(record: Record<string, unknown>): RefurbProject {
     grandTotal: String(record.grandTotal ?? "0"),
     currency: String(record.currency || "GBP"),
     notes: record.notes ? String(record.notes) : null,
+    isTemplate: Boolean(record.isTemplate || false),
     createdAt: String(record.createdAt || ""),
     updatedAt: String(record.modifiedAt || record.updatedAt || ""),
   };
@@ -65,6 +66,7 @@ function mapEspoToProject(record: Record<string, unknown>): RefurbProject {
 function mapProjectToEspo(project: Partial<InsertRefurbProject>): Record<string, unknown> {
   const mapped: Record<string, unknown> = {};
   if (project.name !== undefined) mapped.name = project.name;
+  if (project.isTemplate !== undefined) mapped.isTemplate = project.isTemplate;
   if (project.description !== undefined) mapped.description = project.description || null;
   if (project.status !== undefined) mapped.status = project.status;
   if (project.associatedEntityType !== undefined) mapped.associatedEntityType = project.associatedEntityType || null;
