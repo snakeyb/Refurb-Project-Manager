@@ -171,11 +171,6 @@ export default function ProjectForm() {
 
   const handleTabChange = (tab: RecordTab) => {
     setRecordTab(tab);
-    if (associatedEntityType !== tab) {
-      setAssociatedEntityType("");
-      setAssociatedEntityId("");
-      setAssociatedEntityName("");
-    }
     setRecordSearch("");
     setRecordDebouncedSearch("");
   };
