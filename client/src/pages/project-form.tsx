@@ -238,34 +238,48 @@ export default function ProjectForm() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <label className="text-xs font-medium text-muted-foreground">Type</label>
-                  <div className="flex mt-1 rounded-md border border-input overflow-hidden w-fit">
-                    <button
-                      type="button"
-                      onClick={() => setIsTemplate(false)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${
-                        !isTemplate ? "bg-primary text-primary-foreground" : "bg-white text-muted-foreground hover:bg-muted/50"
-                      }`}
-                      data-testid="button-type-project"
-                    >
-                      <Hammer className="h-3.5 w-3.5" />
-                      Project
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsTemplate(true)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors border-l border-input ${
-                        isTemplate ? "bg-primary text-primary-foreground" : "bg-white text-muted-foreground hover:bg-muted/50"
-                      }`}
-                      data-testid="button-type-template"
-                    >
-                      <LayoutTemplate className="h-3.5 w-3.5" />
-                      Template
-                    </button>
-                  </div>
-                  {isTemplate && (
-                    <p className="text-xs text-muted-foreground mt-1.5">
-                      Templates can be duplicated to create projects. They cannot be associated with a Lead or Property.
-                    </p>
+                  {isEdit && isTemplate ? (
+                    <div className="flex items-center gap-2 mt-1" data-testid="type-locked-template">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-primary/40 bg-primary/5 text-primary w-fit">
+                        <LayoutTemplate className="h-3.5 w-3.5" />
+                        Template
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Templates can be duplicated to create projects.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex mt-1 rounded-md border border-input overflow-hidden w-fit">
+                        <button
+                          type="button"
+                          onClick={() => setIsTemplate(false)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${
+                            !isTemplate ? "bg-primary text-primary-foreground" : "bg-white text-muted-foreground hover:bg-muted/50"
+                          }`}
+                          data-testid="button-type-project"
+                        >
+                          <Hammer className="h-3.5 w-3.5" />
+                          Project
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsTemplate(true)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors border-l border-input ${
+                            isTemplate ? "bg-primary text-primary-foreground" : "bg-white text-muted-foreground hover:bg-muted/50"
+                          }`}
+                          data-testid="button-type-template"
+                        >
+                          <LayoutTemplate className="h-3.5 w-3.5" />
+                          Template
+                        </button>
+                      </div>
+                      {isTemplate && (
+                        <p className="text-xs text-muted-foreground mt-1.5">
+                          Templates can be duplicated to create projects. They cannot be associated with a Lead or Property.
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 
