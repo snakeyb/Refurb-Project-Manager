@@ -338,8 +338,8 @@ export default function ProjectForm() {
                 <div className="space-y-2">
                   <Tabs value={recordTab} onValueChange={(v) => handleTabChange(v as RecordTab)}>
                     <TabsList className="w-full">
-                      <TabsTrigger value="Lead" className="flex-1" data-testid="tab-record-lead">Lead</TabsTrigger>
-                      <TabsTrigger value="Opportunity" className="flex-1" data-testid="tab-record-property">Property</TabsTrigger>
+                      <TabsTrigger value="Lead" className="flex-1 data-[state=active]:border data-[state=active]:border-primary/40" data-testid="tab-record-lead">Lead</TabsTrigger>
+                      <TabsTrigger value="Opportunity" className="flex-1 data-[state=active]:border data-[state=active]:border-primary/40" data-testid="tab-record-property">Property</TabsTrigger>
                     </TabsList>
                   </Tabs>
 
