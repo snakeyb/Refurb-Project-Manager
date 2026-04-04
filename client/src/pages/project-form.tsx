@@ -100,18 +100,18 @@ export default function ProjectForm() {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => setRecordDebouncedSearch(recordSearch), 350);
+    debounceRef.current = setTimeout(() => setRecordDebouncedSearch(recordSearch), 600);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [recordSearch]);
 
   const { data: recordResults, isFetching: recordFetching, isError: recordError } = useQuery<EntityResult[]>({
     queryKey: ["/api/search-entities", recordTab, recordDebouncedSearch],
     queryFn: async () => {
-      const params = new URLSearchParams({ type: recordTab, q: recordDebouncedSearch, maxSize: "200" });
+      const params = new URLSearchParams({ type: recordTab, q: recordDebouncedSearch });
       const res = await apiRequest("GET", `/api/search-entities?${params}`);
       return res.json();
     },
-    enabled: !isTemplate,
+    enabled: !isTemplate && recordDebouncedSearch.length > 0,
     staleTime: 60_000,
     retry: false,
   });
@@ -382,12 +382,12 @@ export default function ProjectForm() {
                     )}
                     {!recordError && recordResults && recordResults.length === 0 && (
                       <div className="px-3 py-2 text-xs text-muted-foreground">
-                        No {recordTabLabelPlural.toLowerCase()} found.
+                        No {recordTabLabelPlural.toLowerCase()} matched your search.
                       </div>
                     )}
                     {!recordError && !recordResults && !recordFetching && (
                       <div className="px-3 py-2 text-xs text-muted-foreground italic">
-                        Loading {recordTabLabelPlural.toLowerCase()}...
+                        Start typing to search {recordTabLabelPlural.toLowerCase()}...
                       </div>
                     )}
                     {recordResults?.map((r) => (
