@@ -9,7 +9,9 @@
                     "style": "default",
                     "handler": "custom:refurb-handler",
                     "actionFunction": "openRefurbProjects",
-                    "checkVisibilityFunction": "isVisible"
+                    "checkVisibilityFunction": "isVisible",
+                    "acl": "read",
+                    "aclScope": "RefurbProject"
                 }
             ]
         }

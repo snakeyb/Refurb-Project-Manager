@@ -7,7 +7,11 @@ define(['action-handler'], function (Dep) {
         isVisible() {
             var entityType = this.view.model.entityType || this.view.model.name;
 
-            return ['Lead', 'Opportunity'].includes(entityType);
+            if (!['Lead', 'Opportunity'].includes(entityType)) {
+                return false;
+            }
+
+            return this.view.getAcl().checkScope('RefurbProject', 'read');
         }
 
         openRefurbProjects() {
