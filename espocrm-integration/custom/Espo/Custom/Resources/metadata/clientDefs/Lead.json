@@ -4,10 +4,8 @@
       {
         "name": "refurbProjects",
         "label": "Refurb Projects",
-        "view": "views/record/panels/relationship",
+        "view": "custom:views/panels/refurb-projects",
         "link": "refurbProjects",
-        "acl": "read",
-        "aclScope": "RefurbProject",
         "select": false,
         "create": false,
         "rowActionsView": "views/record/row-actions/relationship-no-unlink",
