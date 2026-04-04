@@ -129,8 +129,9 @@ export async function registerRoutes(
     if (!storage) return;
     const q = String(req.query.q || "").trim();
     const type = String(req.query.type || "all");
+    const maxSize = Math.min(200, Math.max(1, parseInt(String(req.query.maxSize || "20"), 10) || 20));
     try {
-      const results = await storage.searchEntities(q, type);
+      const results = await storage.searchEntities(q, type, maxSize);
       res.json(results);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Failed to search entities";

@@ -208,28 +208,42 @@ export class EspoCRMStorage implements IStorage {
     }
   }
 
-  async searchEntities(q: string, type: string): Promise<EntityResult[]> {
-    const qs = `maxSize=20&select=id,name${q ? `&textFilter=${encodeURIComponent(q)}` : ""}`;
+  async searchEntities(q: string, type: string, maxSize = 20): Promise<EntityResult[]> {
+    const textFilter = q ? `&textFilter=${encodeURIComponent(q)}` : "";
 
-    const fetchType = async (entityType: "Lead" | "Opportunity"): Promise<EntityResult[]> => {
-      const result = await this.request("GET", `/${entityType}?${qs}`) as {
-        list: Array<{ id: string; name?: string; firstName?: string; lastName?: string; [k: string]: unknown }>;
+    const fetchLead = async (): Promise<EntityResult[]> => {
+      const qs = `maxSize=${maxSize}&select=id,name,leadName,firstName,lastName${textFilter}`;
+      const result = await this.request("GET", `/Lead?${qs}`) as {
+        list: Array<{ id: string; name?: string; leadName?: string; firstName?: string; lastName?: string; [k: string]: unknown }>;
       };
       return (result.list || []).map((r) => {
         const name = String(
+          r.leadName ||
           r.name ||
           [r.firstName, r.lastName].filter(Boolean).join(" ") ||
           r.id
         );
-        return { id: String(r.id), name, type: entityType };
+        return { id: String(r.id), name, type: "Lead" as const };
       });
     };
 
-    if (type === "Lead") return fetchType("Lead");
-    if (type === "Opportunity") return fetchType("Opportunity");
+    const fetchOpportunity = async (): Promise<EntityResult[]> => {
+      const qs = `maxSize=${maxSize}&select=id,name${textFilter}`;
+      const result = await this.request("GET", `/Opportunity?${qs}`) as {
+        list: Array<{ id: string; name?: string; [k: string]: unknown }>;
+      };
+      return (result.list || []).map((r) => ({
+        id: String(r.id),
+        name: String(r.name || r.id),
+        type: "Opportunity" as const,
+      }));
+    };
+
+    if (type === "Lead") return fetchLead();
+    if (type === "Opportunity") return fetchOpportunity();
     const [leads, opps] = await Promise.all([
-      fetchType("Lead").catch(() => [] as EntityResult[]),
-      fetchType("Opportunity").catch(() => [] as EntityResult[]),
+      fetchLead().catch(() => [] as EntityResult[]),
+      fetchOpportunity().catch(() => [] as EntityResult[]),
     ]);
     return [...leads, ...opps].sort((a, b) => a.name.localeCompare(b.name));
   }

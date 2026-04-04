@@ -1,11 +1,12 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useLocation, useSearch } from "wouter";
-import { Save, X, FileText, Tag, Building2, StickyNote, LayoutTemplate, Hammer } from "lucide-react";
+import { Save, X, FileText, Tag, Building2, StickyNote, LayoutTemplate, Hammer, Search, Loader2, Check, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EspoHeader } from "@/components/espo-header";
 import { EspoPanel } from "@/components/espo-panel";
 import { LineItemTable } from "@/components/line-item-table";
@@ -13,11 +14,18 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { RefurbProject, RefurbLineItem } from "@shared/schema";
 import { calculateLineItem, calculateTotals } from "@/lib/calculations";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { getEspoContext } from "@/lib/espo-context";
 
 const STATUSES = ["Draft", "Approved", "In Progress", "Completed", "Cancelled"];
-const ENTITY_TYPES = ["Opportunity", "Lead", "Contact", "Account"];
+
+interface EntityResult {
+  id: string;
+  name: string;
+  type: "Lead" | "Opportunity";
+}
+
+type RecordTab = "Lead" | "Opportunity";
 
 export default function ProjectForm() {
   const { id } = useParams<{ id: string }>();
@@ -35,9 +43,20 @@ export default function ProjectForm() {
   const [status, setStatus] = useState("Draft");
   const [currency, setCurrency] = useState("GBP");
   const [isTemplate, setIsTemplate] = useState(isTemplateDefault);
-  const [associatedEntityType, setAssociatedEntityType] = useState(espoCtx.entityType || "");
+
+  const [associatedEntityType, setAssociatedEntityType] = useState<string>(
+    (espoCtx.entityType === "Lead" || espoCtx.entityType === "Opportunity") ? espoCtx.entityType : ""
+  );
   const [associatedEntityId, setAssociatedEntityId] = useState(espoCtx.entityId || "");
   const [associatedEntityName, setAssociatedEntityName] = useState(espoCtx.entityName || "");
+
+  const [recordTab, setRecordTab] = useState<RecordTab>(
+    espoCtx.entityType === "Opportunity" ? "Opportunity" : "Lead"
+  );
+  const [recordSearch, setRecordSearch] = useState("");
+  const [recordDebouncedSearch, setRecordDebouncedSearch] = useState("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [notes, setNotes] = useState("");
   const [lineItems, setLineItems] = useState<RefurbLineItem[]>([
     calculateLineItem({ id: crypto.randomUUID(), description: "", quantity: 1, unitCost: 0, vatRate: 20 }),
@@ -61,9 +80,12 @@ export default function ProjectForm() {
       setStatus(project.status);
       setCurrency(project.currency);
       setIsTemplate(project.isTemplate ?? false);
-      setAssociatedEntityType(project.associatedEntityType || "");
+      const entType = project.associatedEntityType || "";
+      setAssociatedEntityType(entType);
       setAssociatedEntityId(project.associatedEntityId || "");
       setAssociatedEntityName(project.associatedEntityName || "");
+      if (entType === "Opportunity") setRecordTab("Opportunity");
+      else if (entType === "Lead") setRecordTab("Lead");
       setNotes(project.notes || "");
       const items = Array.isArray(project.lineItems)
         ? project.lineItems as RefurbLineItem[]
@@ -75,6 +97,24 @@ export default function ProjectForm() {
       ]);
     }
   }, [project]);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setRecordDebouncedSearch(recordSearch), 350);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [recordSearch]);
+
+  const { data: recordResults, isFetching: recordFetching, isError: recordError } = useQuery<EntityResult[]>({
+    queryKey: ["/api/search-entities", recordTab, recordDebouncedSearch],
+    queryFn: async () => {
+      const params = new URLSearchParams({ type: recordTab, q: recordDebouncedSearch, maxSize: "200" });
+      const res = await apiRequest("GET", `/api/search-entities?${params}`);
+      return res.json();
+    },
+    enabled: !isTemplate,
+    staleTime: 60_000,
+    retry: false,
+  });
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -129,6 +169,35 @@ export default function ProjectForm() {
     saveMutation.mutate();
   };
 
+  const handleTabChange = (tab: RecordTab) => {
+    setRecordTab(tab);
+    if (associatedEntityType !== tab) {
+      setAssociatedEntityType("");
+      setAssociatedEntityId("");
+      setAssociatedEntityName("");
+    }
+    setRecordSearch("");
+    setRecordDebouncedSearch("");
+  };
+
+  const handleSelectRecord = (r: EntityResult) => {
+    if (associatedEntityId === r.id) {
+      setAssociatedEntityType("");
+      setAssociatedEntityId("");
+      setAssociatedEntityName("");
+    } else {
+      setAssociatedEntityType(r.type);
+      setAssociatedEntityId(r.id);
+      setAssociatedEntityName(r.name);
+    }
+  };
+
+  const clearRecord = () => {
+    setAssociatedEntityType("");
+    setAssociatedEntityId("");
+    setAssociatedEntityName("");
+  };
+
   if (isEdit && isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -141,6 +210,9 @@ export default function ProjectForm() {
       </div>
     );
   }
+
+  const recordTabLabel = recordTab === "Opportunity" ? "Property" : "Lead";
+  const recordTabLabelPlural = recordTab === "Opportunity" ? "Properties" : "Leads";
 
   return (
     <div className="min-h-screen bg-background" data-testid="page-project-form">
@@ -170,17 +242,13 @@ export default function ProjectForm() {
             <EspoPanel title={isTemplate ? "Template Details" : "Project Details"} icon={<FileText className="h-3.5 w-3.5 text-muted-foreground" />}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Type
-                  </label>
+                  <label className="text-xs font-medium text-muted-foreground">Type</label>
                   <div className="flex mt-1 rounded-md border border-input overflow-hidden w-fit">
                     <button
                       type="button"
                       onClick={() => setIsTemplate(false)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${
-                        !isTemplate
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-white text-muted-foreground hover:bg-muted/50"
+                        !isTemplate ? "bg-primary text-primary-foreground" : "bg-white text-muted-foreground hover:bg-muted/50"
                       }`}
                       data-testid="button-type-project"
                     >
@@ -191,9 +259,7 @@ export default function ProjectForm() {
                       type="button"
                       onClick={() => setIsTemplate(true)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors border-l border-input ${
-                        isTemplate
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-white text-muted-foreground hover:bg-muted/50"
+                        isTemplate ? "bg-primary text-primary-foreground" : "bg-white text-muted-foreground hover:bg-muted/50"
                       }`}
                       data-testid="button-type-template"
                     >
@@ -269,52 +335,88 @@ export default function ProjectForm() {
           <div className="space-y-4">
             {!isTemplate && (
               <EspoPanel title="Associated Record" icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground">Record Type</label>
-                    <Select value={associatedEntityType} onValueChange={setAssociatedEntityType}>
-                      <SelectTrigger className="mt-1" data-testid="select-entity-type">
-                        <SelectValue placeholder="Select type..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        {ENTITY_TYPES.map((t) => (
-                          <SelectItem key={t} value={t}>{t}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {associatedEntityType && associatedEntityType !== "none" && (
-                    <>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground">
-                          {associatedEntityType} Name
-                        </label>
-                        <Input
-                          value={associatedEntityName}
-                          onChange={(e) => setAssociatedEntityName(e.target.value)}
-                          placeholder={`e.g. 14 Victoria Road, Manchester`}
-                          className="mt-1"
-                          data-testid="input-entity-name"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground">
-                          PropertyPipeline Record ID
-                        </label>
-                        <Input
-                          value={associatedEntityId}
-                          onChange={(e) => setAssociatedEntityId(e.target.value)}
-                          placeholder="Optional - PropertyPipeline record ID"
-                          className="mt-1"
-                          data-testid="input-entity-id"
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          When integrated with your CRM, this links directly to the record.
-                        </p>
-                      </div>
-                    </>
+                <div className="space-y-2">
+                  <Tabs value={recordTab} onValueChange={(v) => handleTabChange(v as RecordTab)}>
+                    <TabsList className="w-full">
+                      <TabsTrigger value="Lead" className="flex-1" data-testid="tab-record-lead">Lead</TabsTrigger>
+                      <TabsTrigger value="Opportunity" className="flex-1" data-testid="tab-record-property">Property</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+
+                  {associatedEntityId && associatedEntityName && (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-primary/5 border border-primary/20 rounded-md">
+                      <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      <span className="text-sm text-primary flex-1 truncate font-medium" data-testid="text-selected-record">
+                        {associatedEntityName}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={clearRecord}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                        data-testid="button-clear-record"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   )}
+
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      value={recordSearch}
+                      onChange={(e) => setRecordSearch(e.target.value)}
+                      placeholder={`Search ${recordTabLabelPlural}...`}
+                      className="pl-8 h-9"
+                      data-testid="input-record-search"
+                    />
+                    {recordFetching && (
+                      <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+
+                  <div className="border rounded-md max-h-56 overflow-y-auto bg-card" data-testid="record-results">
+                    {recordError && (
+                      <div className="px-3 py-2 text-xs text-destructive">
+                        Could not load {recordTabLabelPlural} — check your CRM connection.
+                      </div>
+                    )}
+                    {!recordError && recordResults && recordResults.length === 0 && (
+                      <div className="px-3 py-2 text-xs text-muted-foreground">
+                        No {recordTabLabelPlural.toLowerCase()} found.
+                      </div>
+                    )}
+                    {!recordError && !recordResults && !recordFetching && (
+                      <div className="px-3 py-2 text-xs text-muted-foreground italic">
+                        Loading {recordTabLabelPlural.toLowerCase()}...
+                      </div>
+                    )}
+                    {recordResults?.map((r) => (
+                      <button
+                        key={r.id}
+                        type="button"
+                        onClick={() => handleSelectRecord(r)}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/50 transition-colors border-b last:border-b-0 ${
+                          associatedEntityId === r.id ? "bg-primary/5" : ""
+                        }`}
+                        data-testid={`record-result-${r.id}`}
+                      >
+                        {recordTab === "Opportunity" ? (
+                          <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                        ) : (
+                          <Building2 className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                        )}
+                        <span className="flex-1 truncate">{r.name}</span>
+                        {associatedEntityId === r.id && (
+                          <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {associatedEntityId
+                      ? `Linked to ${recordTabLabel}: ${associatedEntityName}`
+                      : `Select a ${recordTabLabel} to associate with this project.`}
+                  </p>
                 </div>
               </EspoPanel>
             )}
