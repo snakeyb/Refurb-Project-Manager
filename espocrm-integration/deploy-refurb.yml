@@ -6,7 +6,7 @@
   vars:
     github_repo: "https://github.com/snakeyb/Refurb-Project-Manager.git"
     github_branch: "main"
-    refurb_app_url: "https://apps.wspp.co.uk"
+    refurb_app_url: "https://projects.apps.wspp.co.uk"
     espocrm_root: "/var/www/html"
     espocrm_user: "www-data"
     espocrm_group: "www-data"
